@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+# Composition de développement et de test : le cœur et l'interface (réglages
+# de `partiduo-ui-bulma`, déjà appliqués à son chargement), l'import des
+# relevés dont l'extension dépend, puis les applications de l'extension. Une
+# distribution fait de même avec toutes ses extensions.
+Marten.configure do |config|
+  config.installed_apps = config.installed_apps + Bankimport::INSTALLED_APPS + Bankimport::Ui::INSTALLED_APPS +
+                          Perso::INSTALLED_APPS + Perso::Ui::INSTALLED_APPS
+end

@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Correspondance des rubriques de l'aide à la déclaration avec les cases de
+# la déclaration des revenus (ADR-011 D10), datée par année des revenus.
+# Présentée comme une aide : à vérifier chaque année sur la notice
+# officielle et à mettre à jour ici. Pas de télédéclaration.
+fr:
+  2025:
+    donations: ["7UF", "7UD"]
+    home_employment: ["7DB", "7DR"]
+    professional_expenses: ["1AK", "1BK"]
+    rental: ["4BE", "4BA"]
+be: {}

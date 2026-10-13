@@ -1,0 +1,353 @@
+= partiduo-perso — décisions
+:toc: left
+:toc-title: Table des matières
+:icons: font
+
+Décisions prises pendant la réalisation de l'extension `PERSO` (finances
+personnelles d'un foyer), quand un point n'était pas tranché par les ADR
+(contexte, choix, alternative écartée), puis amendements proposés au contrat
+du cœur, de l'interface et de `partiduo-bankimport`. Les ADR ne sont jamais
+modifiés : un écart ou un complément y est proposé ici.
+
+Spécification : ADR-011 (`../partiduo-docs/adr/ADR-011-finances-personnelles.adoc`,
+D1 à D12, amendements A1 à A3 adoptés), avec ADR-003 (contrat d'extension,
+D2 manifeste, D6 surface publique, D7 événements), ADR-005 (interface),
+ADR-006 (Comptabilité), ADR-007 D3 (interface « Recettes et dépenses »). Aucune
+extension amont : `PERSO` n'a pas d'équivalent dans l'application d'origine
+(legacy).
+
+== Décisions
+
+=== D-PER-001 — Une extension des dossiers foyer, sur la Comptabilité et l'import des relevés (13 octobre 2026)
+
+*Choix.* Extension `PERSO`, `depends_on "ACCOUNTING", "BANKIMPORT"`,
+`requires_core "~> 0.1"`, version lue dans `shard.yml` (constante
+`Perso::VERSION`, reprise par le manifeste). Elle n'écrit aucune table
+comptable : toute écriture passe par `post_financial`, `post_entry` ou
+`cancel_entry`. Ses tables (`perso_*`) portent ce que la Comptabilité ne
+connaît pas.
+
+Dans un dossier d'entreprise (`SettingsView#household?` faux), toute méthode
+du contrat lève `ModuleDisabled` : les écrans répondent 404, tuiles et
+compteurs disparaissent (symétrique de D-AMO-002). Les données initiales
+(`InitialData.register("PERSO", "household", order: 30, kinds: ["household"])`)
+reprennent les comptes des classes 6 et 7 du plan réduit comme catégories et
+le journal financier `F01` comme « Compte courant ».
+
+*Alternative écartée.* Une extension utilisable aussi dans un dossier
+d'entreprise : le plan d'entreprise n'a pas de catégories de foyer, et
+l'ADR réserve ces finances au dossier foyer.
+
+=== D-PER-002 — Incompatibilités vérifiées dans le registre (13 octobre 2026)
+
+*Contexte.* ADR-011 D2 écarte du foyer les modules et extensions
+d'entreprise ; l'amendement A1 (`incompatible_with`, D-FOY-001) contrôle
+l'activation dans les deux sens.
+
+*Choix.* `incompatible_with "INVOICING", "MICRO", "LIBERAL", "STOCK",
+"FOLLOWUP", "ANALYTIC", "EINV", "SUPERPDP", "ESALINK", "CHORUSPRO",
+"TELEDEC", "URSSAF", "CRM", "MODELES"` — codes relevés dans les manifestes
+des dépôts. Restent admis : `SEPA` (un foyer groupe ses virements ;
+l'extension refuse elle-même les prélèvements d'un foyer, D-SEPA-002),
+`REPORTS` (D-REP-003), `DOCUMENT`, `IMPORT`, `FORM`. `AMORTIS` se déclare
+déjà incompatible avec `PERSO` (D-AMO-002) : une déclaration suffit, le
+contrôle est symétrique.
+
+*Alternative écartée.* Citer `SEPA` : priverait le foyer de ses virements
+groupés, contre D-SEPA-002.
+
+=== D-PER-003 — Tables propres, liens vers le cœur sans clé étrangère (13 octobre 2026)
+
+*Choix.* Dix-sept tables `perso_*` (membres, catégories, comptes et
+titulaires, opérations et justificatifs, récurrences et échéances traitées,
+emprunts, versions et échéances confirmées, valorisations et lignes,
+budgets et montants, barème kilométrique, déplacements). Les identifiants du
+cœur (journal, écriture, prévision, élément de prévision, pièce jointe)
+sont relus par le contrat, sans clé étrangère (comme D-BKI-003) ; les liens
+internes et vers `auth_user` ont les leurs. Domaines, montants et
+cohérences contrôlés en base (une opération de virement a un compte de
+destination, une échéance écartée n'a pas d'écriture…). Montants en
+`decimal`, jamais en flottant (spec de conventions).
+
+=== D-PER-004 — Permissions de l'extension et droits du cœur (13 octobre 2026)
+
+*Choix.* `perso.read` (consulter), `perso.write` (saisir, corriger,
+supprimer une opération ; confirmer, écarter une échéance ; justificatifs,
+récurrences, déplacements), `perso.budget` (budgets, valorisations),
+`perso.admin` (comptes, emprunts, catégories, règles, membres, barème).
+Le contrat du cœur exige en plus ses propres droits, avec l'acteur réel :
+`accounting.entry.read` pour lire les opérations, `accounting.entry.post`
+et l'écriture dans le journal pour saisir, `accounting.entry.cancel` pour
+corriger, `accounting.report.read|write` pour les budgets,
+`accounting.account.write`, `cards.card.write`, `accounting.ledger.write`
+pour créer un compte, `core.attachment.*` pour les justificatifs,
+`bankimport.*` pour les règles. Le conseiller extérieur (D12) reçoit le
+profil « comptable invité » du cœur (`ACCOUNTANT_GUEST`, toutes les
+permissions `*.read`, D-GUEST-001), donc `perso.read` sans rien d'autre.
+
+=== D-PER-005 — Catégories : des comptes des classes 6 et 7, deux niveaux (13 octobre 2026)
+
+*Choix.* Une catégorie est un compte créé par `create_account`, tenu dans
+`perso_category` avec son sens, son parent, son étiquette fiscale et son
+rang. Le libellé est tenu des deux côtés (la catégorie et son compte, par
+`update_account`). Numérotation : une sous-catégorie prend le numéro de son
+parent suivi de deux chiffres (premier libre : `6107`, `6201`) ; une
+catégorie de premier niveau créée par le foyer prend `6P01`, `7P01`… sous
+la racine (`6`, `7`), car les numéros à deux chiffres du plan réduit sont
+tous pris et qu'un numéro qui n'est le préfixe d'aucune autre catégorie
+garde juste la formule du réel d'un budget. Le numéro n'est jamais montré.
+
+Une opération ne se range que dans une catégorie active sans
+sous-catégorie. Une catégorie employée (écriture, budget, récurrence,
+emprunt) ne se supprime pas : elle se retire (`active` faux). Étiquettes
+posées d'office : `601` don, `602` emploi à domicile, `703` revenu foncier.
+
+=== D-PER-006 — Comptes du foyer : journal financier, fiche Banque, compte sous la base de la nature (13 octobre 2026)
+
+*Choix.* Un compte du foyer crée, par le contrat, un compte de bilan sous la
+base de sa nature et du régime (France : `512` courant, `514` livret, `2711`
+assurance-vie, `2712` PEA, `2713` titres, `164` emprunt, `168` autre dette,
+`213`, `214`, `2182`, `2188` selon le genre d'un bien ; Belgique : `550`,
+`551`, `2811`, `2813`, `173`, `174`, `221`, `222`, `241`, `240`, sans PEA),
+numéroté base + trois chiffres (`514001`) ; puis une fiche de la catégorie
+`BANK` qui porte ce compte, puis un journal financier sur cette fiche (nom
+rendu unique). On peut aussi reprendre un journal financier existant (le
+`F01` du plan réduit, repris d'office) ou un compte du plan existant.
+
+Le solde d'ouverture est une écriture d'opérations diverses contre le
+patrimoine d'ouverture (`10`), dans le premier journal d'opérations
+diverses ouvert à l'acteur. Le solde affiché est toujours celui de la
+Comptabilité (`account_statement`), jamais recopié.
+
+=== D-PER-007 — Opérations : le service d'écriture, un virement par le compte de passage (13 octobre 2026)
+
+*Choix.*
+
+* Dépense ou recette d'une catégorie : `post_financial`, une ligne dont la
+  contrepartie est le compte de la catégorie.
+* Ventilée sur plusieurs catégories : `post_entry` dans le même journal
+  financier, une ligne de banque et une ligne par catégorie.
+* Virement entre deux comptes du foyer : deux `post_financial`, un dans
+  chaque journal, par le compte de passage (`internal_transfer` du dossier,
+  `58`) : chaque compte voit son mouvement dans son journal (droits par
+  journal, pointage d'un relevé), et le virement n'entre ni dans les
+  catégories ni dans les budgets (ADR-011 D3).
+* Chaque écriture porte une référence unique (`perso:operation:<uuid>`,
+  l'index `accounting_entry_source` l'exige).
+
+`perso_operation` garde ce que la Comptabilité ne connaît pas
+(bénéficiaire, membre, note, version précédente). La liste des opérations
+lit les écritures non annulées des journaux visibles : celles qu'un relevé
+importé a transférées (`bankimport:line:…`) ou qu'on a passées dans la
+Comptabilité s'y présentent aussi, leur libellé tenant lieu de
+bénéficiaire.
+
+=== D-PER-008 — Correction et suppression par extourne, historique des versions (13 octobre 2026)
+
+*Choix.* Corriger une opération extourne ses écritures (`cancel_entry`, à
+leur date) puis passe la saisie corrigée ; la nouvelle ligne cite
+l'écriture remplacée (`previous_entry_id`), l'ancienne passe à `replaced`.
+Supprimer extourne et passe à `deleted`. L'écran d'une opération montre ses
+versions, avec leur auteur (membre de l'utilisateur qui a passé
+l'écriture) et leur date. Aucun nouvel événement (ADR-011).
+
+Abonnement `entry.cancelled` : une écriture extournée hors de l'extension
+retire l'opération (`deleted`), défait l'échéance qu'elle confirmait. Pour
+un virement, l'autre jambe reste : elle se corrige ou se supprime à part.
+
+Une écriture transférée d'un relevé importé voit sa ligne *écartée* dans
+`partiduo-bankimport` quand on la corrige (`Bankimport::Api.discard`) :
+sans cela l'abonné de l'import (D-BKI-009) la remettrait à traiter et un
+nouveau transfert ferait un doublon. Elle reste pour la détection des
+doublons. Amendement proposé A-PER-3.
+
+=== D-PER-009 — Emprunts : tableau calculé en BigDecimal, versions gardées (13 octobre 2026)
+
+*Choix.* Échéances mensuelles constantes `A = C·r / (1 − (1 + r)^−n)`, taux
+mensuel = taux nominal ÷ 1 200 (30 décimales), puissances arrondies à
+chaque produit, échéance et intérêts du mois arrondis au centime
+(demi-centime au-dessus), dernière échéance ajustée au capital restant.
+Différé partiel (intérêts seuls) ou total (intérêts capitalisés). Assurance
+fixe par échéance ou taux annuel sur le capital initial ou restant dû.
+
+Un remboursement anticipé crée une version à partir de sa date : capital
+restant après la dernière échéance passée, moins le montant ; ensuite la
+durée diminue (échéance gardée) ou l'échéance diminue (durée gardée) ; un
+remboursement total solde l'emprunt (`repaid`). Le tableau présenté garde
+les échéances passées des versions antérieures. Le capital restant dû au
+patrimoine est celui du tableau, pas le solde du compte.
+
+Confirmer une échéance passe, sur le compte payeur, une écriture du total
+(capital au compte de passage, intérêts et assurance à leurs catégories) et,
+sur le compte de l'emprunt, la diminution de la dette (ou l'augmentation
+des intérêts capitalisés d'un différé total).
+
+=== D-PER-010 — Opérations récurrentes et échéancier calculés à l'affichage (13 octobre 2026)
+
+*Choix.* Fréquences mensuelle, trimestrielle, annuelle, tous les N jours ;
+fin de mois ramenée au mois court ; report au jour ouvré suivant (samedi,
+dimanche, fériés fixes et mobiles de France ou de Belgique, Pâques par
+l'algorithme grégorien). Seules les échéances *traitées* sont gardées
+(`perso_occurrence` : confirmée, rapprochée, écartée) ; les autres sont à
+venir ou en retard. Retards signalés sur les 90 derniers jours (compteur du
+menu, « À traiter », tuile). Soldes prévisionnels des comptes de
+trésorerie : solde du jour, puis chaque échéance non traitée jusqu'à la fin
+de la période, plus bas solde et sa date. Aucune tâche planifiée n'écrit
+d'opération (ADR-011 D7).
+
+=== D-PER-011 — Rapprochement d'une ligne importée avec une échéance (13 octobre 2026)
+
+*Choix.* Abonnement `entry.posted` (événement existant) : une écriture
+transférée d'un relevé (`bankimport:line:…`) sur un compte du foyer
+rapproche l'échéance non traitée la plus proche (± 10 jours) d'une
+opération récurrente du même compte, de même contrepartie (catégorie, ou
+compte de destination ou de passage d'un virement) et de même montant
+(± 20 % pour un montant estimé) ; à défaut, l'échéance d'emprunt du compte
+payeur dont le total vaut le montant. Rien n'est écrit en comptabilité.
+Une échéance rapprochée à tort se rouvre.
+
+=== D-PER-012 — Budgets : une prévision de la Comptabilité par année civile (13 octobre 2026)
+
+*Choix.* Créer le budget d'une année crée la prévision « Budget AAAA » sur
+les douze périodes de l'année civile (`create_forecast`), avec deux
+catégories de prévision (dépenses, recettes). Budgéter une catégorie crée
+un élément dont la formule du réel porte sur le compte et ses sous-comptes
+(`[6101%-s]` pour une dépense, `[701%-S]` pour une recette) ; un montant
+annuel est réparti au centime sur les douze périodes (montants propres),
+la dernière recevant le reste. Une catégorie ne se budgète pas si son
+parent ou une sous-catégorie l'est déjà. Réalisé, écart et reste viennent
+de `forecast_report` ; « à date » : jusqu'au mois du jour pour l'année en
+cours. Une dépense dépasse quand son réalisé à date passe le budget à date
+(annuel : sur l'année). Proposition : un douzième du réalisé de l'année
+précédente pour chaque catégorie sans sous-catégorie non budgétée.
+
+=== D-PER-013 — Membres du foyer et visibilité par compte (13 octobre 2026)
+
+*Choix.* Un membre est un utilisateur du dossier, avec un prénom
+d'affichage et un rôle (`adult`, `minor`, `advisor`) qui guide la
+présentation ; les droits restent ceux de son profil. « Comptes visibles »
+active les droits par journal de son utilisateur
+(`set_ledger_security`, `set_ledger_access`) : écriture (lecture pour un
+conseiller) sur les comptes cochés, aucun accès aux autres comptes du
+foyer ; exige la gestion des utilisateurs du socle. Un profil
+administrateur voit tous les journaux (règle du cœur). Le patrimoine, les
+budgets et l'aide à la déclaration ne comptent que les comptes visibles.
+
+=== D-PER-014 — Valorisations, plus-value latente, patrimoine net (13 octobre 2026)
+
+*Choix.* Une valorisation est une donnée de l'extension, pas une écriture :
+valeur à une date (une par jour et par compte), ou lignes d'un PEA ou d'un
+compte-titres (titre, quantité, cours ; montant au centime). Plus-value
+latente : dernière valeur moins les versements nets, c'est-à-dire le solde
+du compte en comptabilité. Valeur au patrimoine : trésorerie au solde,
+placements et biens à leur dernière valeur (à défaut leur solde), dettes au
+capital restant dû du tableau (à défaut leur solde). Répartition par membre
+: valeur partagée à parts égales entre les titulaires, le foyer pour un
+compte sans titulaire. Évolution : fin de chacun des douze derniers mois.
+
+=== D-PER-015 — Années civiles créées à la demande, jamais clôturées (13 octobre 2026)
+
+*Choix.* Les exercices du foyer sont des années civiles. Une saisie, une
+échéance, un solde d'ouverture ou un budget d'une année absente la fait
+créer (douze périodes) par l'acteur système, de trente ans en arrière à
+deux ans en avant : le découpage n'est pas une décision du foyer. Rien
+n'est créé au provisionnement, pour laisser le dossier choisir ses premiers
+exercices (la démonstration crée `N-1` et `N`). L'extension ne clôture
+rien ; le menu de clôture est écarté de l'interface (D-PER-018).
+
+=== D-PER-016 — Aide à la déclaration : étiquettes, barème et cases datés (13 octobre 2026)
+
+*Choix.* Rubriques tirées des étiquettes des catégories : dons (par
+organisme), emploi à domicile (par intervenant, moins les aides perçues
+étiquetées), frais réels (par catégorie, et frais kilométriques des
+déplacements saisis), revenus fonciers (loyers moins charges, par
+catégorie : un bien = une sous-catégorie, les intérêts d'un emprunt locatif
+dans une catégorie étiquetée « charge foncière »). Chaque ligne renvoie à
+ses opérations et compte leurs justificatifs. Barème kilométrique : valeurs
+de départ datées dans `data/mileage.yml` (barème 2024), remplacées par
+celles que l'administrateur enregistre pour une année ; cases de la
+déclaration dans `data/tax_boxes.yml` (table 2025), présentées comme une
+aide à vérifier. Éditions CSV et PDF/A (tableau neutre du socle,
+`Core.table_pdf`). Ni télédéclaration, ni calcul de l'impôt.
+
+=== D-PER-017 — Règles de catégorisation : celles de l'import des relevés (13 octobre 2026)
+
+*Contexte.* Le contrat `Bankimport::Api` tient des règles « le libellé
+contient… / le montant vaut… / sens / journal → fiche ou compte »,
+apprises des choix (D-BKI-006).
+
+*Choix.* Une catégorie étant un compte, une règle du foyer est une règle
+de l'import dont la contrepartie est le compte d'une catégorie : l'écran
+« Règles de catégorisation du foyer » les lit et les écrit par
+`Bankimport::Api` (droits `bankimport.*`), en montrant la catégorie et le
+compte du foyer, jamais un numéro. Le contrat de l'import ne connaît pas le
+bénéficiaire : amendement proposé A-PER-2 ; d'ici là, le libellé de la ligne
+tient lieu de bénéficiaire.
+
+=== D-PER-018 — Interface « Recettes et dépenses » par l'accroche de l'interface (13 octobre 2026)
+
+*Choix.* `PartiduoUi::Extensions.simple_mode "PERSO"` (A2) : menu réduit
+(tableau de bord, opérations, comptes, relevés à traiter de l'import,
+échéancier, budgets, patrimoine, déclaration), vocabulaire commun
+« Recettes et dépenses » / « Comptabilité », les deux interfaces offertes,
+menus d'entreprise de la Comptabilité écartés
+(`SimpleMode::BUSINESS_ACCOUNTING_MENUS` : TVA, FEC, clôture), tuiles
+(trésorerie, patrimoine net, échéances, budget dépassé), lien vers les
+paramètres du foyer. Mêmes tuiles dans l'interface « Comptabilité »
+(`Extensions.tile`) ; compteur « Échéancier » (`Extensions.counter`).
+Écrans sur les gabarits du référentiel de l'interface (listes, formulaires,
+consultations), filtres en HTMX, un gabarit propre pour les consultations
+avec dépôt de justificatif (formulaire multipart, sans JavaScript). HTMX
+suffit ; Opal reste disponible pour une saisie en grille si l'usage le
+demande.
+
+=== D-PER-019 — Dépendances sur GitHub, verrou sans `path:` (13 octobre 2026)
+
+*Choix.* Organisation commune des dépôts : `shard.yml` vers
+`aloli-partiduo/partiduo-app`, `partiduo-bankimport` et
+`partiduo-ui-bulma` (développement) sur la branche `development` ;
+`shard.lock` verrouillé sur leurs têtes publiées, sans aucun `path:`
+(contrôlé en CI) ; `scripts/override-local.sh` produit un
+`shard.override.yml` local, non versionné, pour les copies de travail
+voisines.
+
+== Amendements proposés
+
+À soumettre à l'utilisateur ; l'extension les contourne sans modifier
+`partiduo-app`, `partiduo-ui-bulma` ni `partiduo-bankimport`.
+
+A-PER-1 — Solde d'un compte à une date, sans ses lignes (cœur, `Partiduo::Api::Accounting`)::
+  Le solde d'un compte du foyer et l'évolution du patrimoine lisent
+  `account_statement`, qui charge toutes les lignes du compte. Proposition :
+  `account_balance(actor, number, as_of) : BigDecimal` (une agrégation
+  SQL, droits par journal compris). Contournement en place.
+
+A-PER-2 — Bénéficiaire d'une règle et d'une ligne importée (`partiduo-bankimport`)::
+  ADR-011 D6 veut des règles « alors telle catégorie et tel bénéficiaire ».
+  Proposition : `RuleInput#payee`, `LineView#payee` et la référence du
+  bénéficiaire dans l'écriture transférée (libellé ou champ dédié).
+  Contournement : le libellé de la ligne tient lieu de bénéficiaire
+  (D-PER-017).
+
+A-PER-3 — Rattacher une ligne importée à l'écriture qui corrige la sienne (`partiduo-bankimport`)::
+  Corriger une écriture transférée l'extourne : l'abonné de l'import rend
+  sa ligne à traiter (D-BKI-009). Proposition :
+  `Bankimport::Api.relink(actor, line_id, entry_id)`, qui garde la ligne
+  transférée en la rattachant à la nouvelle écriture (et à son pointage).
+  Contournement : la ligne est écartée (D-PER-008).
+
+A-PER-4 — Prévision tenue par une extension (cœur, prévisions)::
+  Le budget d'une année est une prévision que l'écran « Prévisions » de la
+  Comptabilité laisse modifier ou supprimer ; l'extension le détecte
+  (`budget.forecast.broken`). Proposition : un propriétaire de la prévision
+  (`ForecastInput#owner = "PERSO"`) qui en réserve l'écriture à
+  l'extension, lisible par tous.
+
+A-PER-5 — Type de dossier dans la console d'administration (`partiduo-admin`, D-FOY-005)::
+  Le choix du type `household` à la création d'un dossier depuis la console
+  a été reporté « avec `partiduo-perso` » : paramètre de la tâche
+  `instance.create`, colonne du dossier, formulaire, exécutant. Hors du
+  périmètre de cette extension ; à faire dans `partiduo-admin`.
+
+Aucun nouvel événement n'est demandé à ADR-003 D7 : `entry.posted` et
+`entry.cancelled` suffisent.

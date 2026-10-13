@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Barème kilométrique des voitures (frais réels, ADR-011 D10), valeurs de
+# départ datées : année des revenus, puissance fiscale (7 : 7 CV et plus),
+# tranches de distance annuelle (`max_km` nul : la dernière), formule
+# distance × coefficient + constante. L'administrateur du dossier le met à
+# jour chaque année dans les paramètres du foyer ; ces valeurs ne servent
+# que tant qu'il ne l'a pas fait. Montants en chaînes décimales.
+fr:
+  2024:
+    3: [{max_km: 5000, coefficient: "0.529", constant: "0"}, {max_km: 20000, coefficient: "0.316", constant: "1065"}, {max_km: null, coefficient: "0.370", constant: "0"}]
+    4: [{max_km: 5000, coefficient: "0.606", constant: "0"}, {max_km: 20000, coefficient: "0.340", constant: "1330"}, {max_km: null, coefficient: "0.407", constant: "0"}]
+    5: [{max_km: 5000, coefficient: "0.636", constant: "0"}, {max_km: 20000, coefficient: "0.357", constant: "1395"}, {max_km: null, coefficient: "0.427", constant: "0"}]
+    6: [{max_km: 5000, coefficient: "0.665", constant: "0"}, {max_km: 20000, coefficient: "0.374", constant: "1457"}, {max_km: null, coefficient: "0.447", constant: "0"}]
+    7: [{max_km: 5000, coefficient: "0.697", constant: "0"}, {max_km: 20000, coefficient: "0.394", constant: "1515"}, {max_km: null, coefficient: "0.470", constant: "0"}]
+be: {}

@@ -1,0 +1,137 @@
+= Contrat `Perso::Api`
+:toc: left
+:toc-title: Table des matières
+:icons: font
+
+Contrat public de l'extension `PERSO` (finances personnelles d'un foyer),
+sur le modèle de `Partiduo::Api` : acteur en premier argument, contrôle
+d'accès en première ligne (extension active, dossier foyer, permission),
+vues immuables, commandes qui rendent un `Result` avec des erreurs par champ
+(`perso.errors.*`), dans une transaction. L'interface `ui/bulma/` ne passe
+que par lui, `Bankimport::Api` et `Partiduo::Api`. Montants toujours en
+`BigDecimal` ; dates à minuit UTC.
+
+Dans un dossier d'entreprise, toute méthode lève
+`Partiduo::Api::ModuleDisabled` ; `tile` et `overdue_count` rendent `nil`
+(D-PER-001).
+
+== Permissions
+
+[cols="1,3",options="header"]
+|===
+|Permission |Ouvre
+|`perso.read` |`categories`, `category`, `accounts`, `account`, `members`, `rules`, `mileage_rates`, `operations`, `operation` (+ `accounting.entry.read`), `documents`, `document_content` (+ `core.attachment.read`), `export_operations`, `export_accounts`, `export_valuations`, `recurrings`, `recurring`, `schedule`, `loans`, `loan`, `preview_loan`, `holdings`, `holding`, `wealth`, `budget_years`, `budget` (+ `accounting.report.read`), `tax_summary`, `tax_csv`, `tax_pdf`, `trips`, `tile`, `overdue_count`
+|`perso.write` |`check_operation`, `record_operation` (+ `accounting.entry.post`, journal en écriture), `update_operation`, `delete_operation` (+ `accounting.entry.cancel`), `attach_document` (+ `core.attachment.write`), `delete_document`, `save_recurring`, `delete_recurring`, `confirm_due`, `skip_due`, `reopen_due`, `confirm_installment`, `add_trip`, `delete_trip`
+|`perso.budget` |`record_valuation`, `delete_valuation`, `create_budget`, `set_budget_line`, `delete_budget_line`, `propose_budget` (+ `accounting.report.write`)
+|`perso.admin` |`create_category`, `update_category`, `delete_category`, `load_categories` (+ `accounting.account.write`), `available_ledgers`, `create_account` (+ `accounting.account.write`, `cards.card.write`, `accounting.ledger.write`, `accounting.entry.post` pour un solde d'ouverture), `update_account`, `candidate_users`, `save_member`, `delete_member`, `set_member_accounts` (+ `auth.users.manage`), `save_rule`, `delete_rule` (+ `bankimport.admin`), `set_mileage_rates`, `create_loan`, `prepay_loan`
+|===
+
+== Catégories (D3, D-PER-005)
+
+* `categories(actor, include_inactive = true) : Array(CategoryView)` —
+  dépenses puis recettes, chaque catégorie de premier niveau suivie de ses
+  sous-catégories ; `full_label` (« Logement › Énergie »).
+* `create_category(actor, CategoryInput)` — compte créé sous le parent
+  (`6101` → `6107`) ou au premier niveau (`6P01`). Erreurs :
+  `category.label.*`, `category.kind.invalid`, `category.tax_tag.invalid`,
+  `category.parent.invalid|depth|kind` et celles du plan comptable.
+* `update_category(actor, id, CategoryInput)` — libellé (et celui du
+  compte), étiquette, rang, état ; le sens et le parent ne changent pas
+  (`category.kind.locked`).
+* `delete_category(actor, id)` — catégorie jamais employée seulement
+  (`category.has_children`, `category.in_use`).
+* `load_categories(actor) : Result(Int32)` — reprise des comptes 6 et 7.
+
+== Comptes du foyer (D5, D-PER-006)
+
+* `accounts(actor, as_of = nil) : Array(AccountView)` — comptes visibles
+  (droits par journal) ; `balance` : solde de la Comptabilité (capital dû
+  pour une dette) ; `value` : valeur au patrimoine.
+* `create_account(actor, AccountInput)` — `ledger_id` (reprise d'un journal
+  financier), `account_number` (reprise d'un compte du plan), sinon compte,
+  fiche Banque et journal créés ; `opening_balance` à `opened_on`. Erreurs :
+  `account.nature.invalid|unavailable`, `account.asset_kind.*`,
+  `account.ledger.invalid|not_financial|taken`, `account.number.*`,
+  `account.label.*`, `account.rate.invalid`, `account.ceiling.invalid`,
+  `account.holder.invalid`, `account.misc_ledger.missing`.
+* `update_account(actor, id, AccountUpdateInput)`.
+
+== Opérations (D4, D-PER-007, D-PER-008)
+
+* `operations(actor, OperationQuery) : Array(OperationView)` — écritures non
+  annulées des comptes visibles, de la plus récente à la plus ancienne ;
+  `amount` signé pour le compte ; `splits` (catégories, autre compte) ;
+  `source` (`perso`, `bankimport`, `other`) ; `versions`.
+* `operation(actor, entry_id) : OperationDetailView` — vue, versions
+  (`VersionView` : état, auteur, date), justificatifs.
+* `record_operation(actor, OperationInput) : Result(OperationView)` —
+  `kind` `expense` ou `income` avec `category_id` ou `splits`, ou
+  `transfer` avec `to_account_id`. Erreurs : `operation.kind.invalid`,
+  `operation.amount.positive|cents`, `operation.category.blank|invalid|kind|has_children`,
+  `operation.splits.total`, `operation.transfer.same_account`,
+  `operation.member.invalid`, `operation.payee.too_long`,
+  `operation.note.too_long`, `operation.date.out_of_range`,
+  `account.blank|invalid|read_only|closed`, et celles de la Comptabilité
+  (période, journal).
+* `update_operation(actor, entry_id, OperationInput)` — extourne puis
+  nouvelle écriture ; `delete_operation(actor, entry_id)` — extourne.
+* `attach_document(actor, DocumentInput)`, `document_content`,
+  `delete_document`, `documents` — une cible : écriture, compte ou année
+  (`document.target.one`).
+* `export_operations`, `export_accounts`, `export_valuations` : CSV.
+
+== Échéancier et emprunts (D5, D7, D-PER-009 à D-PER-011)
+
+* `save_recurring(actor, RecurringInput, id = nil)`, `delete_recurring`,
+  `recurrings`, `recurring` — erreurs `recurring.*` et `operation.*`.
+* `schedule(actor, from, to) : ScheduleView` — `dues` (`DueView` : date
+  prévue, date ouvrée, montant signé, état `upcoming|overdue|confirmed|matched|skipped`),
+  `balances` (solde du jour, prévisionnel, plus bas).
+* `confirm_due(actor, ConfirmInput) : Result(OperationView)`,
+  `skip_due(actor, recurring_id, due_on)`, `reopen_due(…)` —
+  `recurring.due.unknown|done|not_reopenable`.
+* `create_loan(actor, LoanInput)`, `preview_loan`, `loan`, `loans` —
+  `loan.*`.
+* `prepay_loan(actor, id, PrepaymentInput)` — nouvelle version ;
+  `loan.prepayment.mode|positive|before|after_end|too_much`.
+* `confirm_installment(actor, id, due_on, date = nil)` —
+  `loan.installment.unknown|done`.
+
+== Budgets (D8, D-PER-012)
+
+* `create_budget(actor, year)`, `budget(actor, year) : BudgetView?`,
+  `budget_years` — `budget.year.taken|missing`.
+* `set_budget_line(actor, year, BudgetLineInput)`, `delete_budget_line` —
+  `budget.amount.invalid`, `budget.period_kind.invalid`,
+  `budget.category.taken|overlap`, `budget.forecast.broken`.
+* `propose_budget(actor, year)`.
+
+== Patrimoine (D9, D-PER-014)
+
+* `record_valuation(actor, ValuationInput)`, `delete_valuation`,
+  `holdings`, `holding` — `valuation.*`.
+* `wealth(actor) : WealthView` — trésorerie, placements, biens, dettes,
+  `net`, `by_nature`, `by_member`, `months`.
+
+== Déclaration de revenus (D10, D-PER-016)
+
+* `tax_summary(actor, year) : TaxSummaryView` — rubriques `donations`,
+  `home_employment`, `professional_expenses`, `rental` ; lignes, opérations,
+  cases (table datée), année du barème.
+* `tax_csv(actor, year)`, `tax_pdf(actor, year, amount_formatter)`.
+* `trips`, `add_trip`, `delete_trip` ; `mileage_rates(actor, year)`,
+  `set_mileage_rates(actor, year, rates)` — `mileage.*`, `trip.*`.
+
+== Membres et règles (D6, D12, D-PER-013, D-PER-017)
+
+* `members`, `candidate_users`, `save_member(actor, MemberInput, id = nil)`,
+  `delete_member`, `set_member_accounts(actor, id, account_ids)` —
+  `member.*`.
+* `rules`, `save_rule(actor, RuleInput, id = nil)`, `delete_rule` — règles
+  de `partiduo-bankimport` vers le compte d'une catégorie.
+
+== Tableau de bord
+
+* `tile(actor) : TileView?` — trésorerie, patrimoine net, échéances en
+  retard et à trente jours, catégories dépassées.
+* `overdue_count(actor) : Int64?` — compteur du menu « Échéancier ».

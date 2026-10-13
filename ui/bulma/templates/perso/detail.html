@@ -1,0 +1,34 @@
+{# SPDX-License-Identifier: AGPL-3.0-or-later. Consultation de l'extension (opération, compte, échéancier, budget, patrimoine, déclaration) : rubriques (définitions, tableaux, notes) comme les consultations du référentiel, onglets, actions, formulaire facultatif, et dépôt d'un justificatif (envoi multipart, sans JavaScript) quand upload_url est donné. #}{% extend "ui/base.html" %}
+{% block title %}{{ title }}{% endblock title %}
+{% block crumbs %}{% include "ui/_crumbs.html" %}{% endblock crumbs %}
+{% block heading %}{{ title }}{% if status %} <span class="tag is-light pd-status-tag">{{ status }}</span>{% endif %}{% endblock heading %}
+{% block actions %}{% for action in actions %}{% include "ui/_action.html" %}{% endfor %}{% endblock actions %}
+{% block content %}
+{% if intro %}<p class="pd-muted mb-3">{{ intro }}</p>{% endif %}
+{% if tabs %}<nav class="pd-tabs mb-3" aria-label="{{ title }}">{% for tab in tabs %}<a href="{{ tab.url }}"{% if tab.current %} aria-current="page"{% endif %}>{{ tab.label }}</a>{% endfor %}</nav>{% endif %}
+<div class="pd-sections">
+{% for section in sections %}
+<section class="pd-panel" aria-labelledby="{{ section.anchor }}">
+  <header><h2 id="{{ section.anchor }}">{{ section.title }}</h2>{% if section.actions %}<div class="pd-row-actions">{% for action in section.actions %}{% include "ui/_action.html" %}{% endfor %}</div>{% endif %}</header>
+  {% if section.items %}<div class="pd-body"><dl class="pd-dl pd-detail">{% for item in section.items %}<dt>{{ item.label }}</dt><dd{% if item.mono %} class="pd-mono"{% endif %}>{% if item.url %}<a class="pd-link" href="{{ item.url }}">{{ item.value }}</a>{% else %}{{ item.value }}{% endif %}</dd>{% endfor %}</dl></div>{% endif %}
+  {% if section.note %}<div class="pd-body"><p class="pd-muted">{{ section.note }}</p></div>{% endif %}
+  {% if section.table %}{% include "ui/_table.html" with table=section.table %}{% endif %}
+</section>
+{% endfor %}
+</div>
+{% if upload_url %}<section class="pd-panel" aria-labelledby="perso-upload-title">
+  <header><h2 id="perso-upload-title">{% translate "perso_ui.documents.add" %}</h2></header>
+  <div class="pd-body">
+    <form method="post" action="{{ upload_url }}" enctype="multipart/form-data" class="pd-form" novalidate data-perso-upload>
+      {% csrf_input %}
+      <div class="pd-form-grid">
+        <div class="field"><label class="label" for="perso-upload-file">{% translate "perso_ui.documents.file" %}</label><input class="input" type="file" id="perso-upload-file" name="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.tif,.tiff,.txt,.csv,.xml"></div>
+        <div class="field"><label class="label" for="perso-upload-kind">{% translate "perso_ui.documents.kind" %}</label><div class="select is-fullwidth"><select id="perso-upload-kind" name="kind">{% for item in document_kinds %}<option value="{{ item.value }}">{{ item.label }}</option>{% endfor %}</select></div></div>
+        <div class="field"><label class="label" for="perso-upload-label">{% translate "perso_ui.documents.label" %}</label><input class="input" type="text" id="perso-upload-label" name="label" maxlength="255"></div>
+      </div>
+      <div class="pd-form-actions"><button class="button is-primary pd-touch" type="submit">{% include "ui/_icon.html" with name="upload" %}<span>{% translate "perso_ui.documents.add" %}</span></button></div>
+    </form>
+  </div>
+</section>{% endif %}
+{% if form %}{% include "ui/_form_panel.html" %}{% endif %}
+{% endblock content %}

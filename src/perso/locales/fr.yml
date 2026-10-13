@@ -1,0 +1,323 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+fr:
+  perso:
+    module:
+      name: "Finances du foyer"
+    permissions:
+      read: "Consulter les finances du foyer"
+      write: "Saisir et corriger des opérations, confirmer des échéances"
+      budget: "Tenir les budgets et les valorisations"
+      admin: "Administrer le foyer : comptes, catégories, règles, membres, barèmes"
+    menu:
+      perso: "Mon foyer"
+      perso_operations: "Opérations"
+      perso_accounts: "Comptes"
+      perso_schedule: "Échéancier"
+      perso_budgets: "Budgets"
+      perso_wealth: "Patrimoine"
+      perso_tax: "Déclaration de revenus"
+      perso_categories: "Catégories du foyer"
+      perso_rules: "Règles de catégorisation du foyer"
+      perso_members: "Membres du foyer"
+      perso_settings: "Paramètres du foyer"
+    natures:
+      current: "Compte courant"
+      savings: "Livret"
+      life_insurance: "Assurance-vie"
+      pea: "PEA"
+      securities: "Compte-titres"
+      mortgage: "Emprunt immobilier"
+      other_debt: "Autre dette"
+      property: "Bien"
+    asset_kinds:
+      residence: "Résidence principale"
+      real_estate: "Autre bien immobilier"
+      vehicle: "Véhicule"
+      other: "Autre bien"
+    category_kinds:
+      expense: "Dépenses"
+      income: "Recettes"
+    tax_tags:
+      donation: "Don"
+      home_employment: "Emploi à domicile"
+      home_employment_aid: "Aide à l'emploi à domicile"
+      professional_expenses: "Frais professionnels"
+      rental_income: "Revenu foncier"
+      rental_charges: "Charge foncière"
+    member_roles:
+      adult: "Adulte"
+      minor: "Mineur"
+      advisor: "Conseiller (lecture seule)"
+    operation_kinds:
+      expense: "Dépense"
+      income: "Recette"
+      transfer: "Virement entre comptes"
+    operation_statuses:
+      active: "En vigueur"
+      replaced: "Corrigée"
+      deleted: "Supprimée"
+    sources:
+      perso: "Saisie"
+      bankimport: "Relevé importé"
+      other: "Comptabilité"
+    frequencies:
+      monthly: "Mensuelle"
+      quarterly: "Trimestrielle"
+      yearly: "Annuelle"
+      days: "Tous les N jours"
+    due_statuses:
+      upcoming: "À venir"
+      overdue: "En retard"
+      confirmed: "Confirmée"
+      matched: "Rapprochée d'un relevé"
+      skipped: "Écartée"
+    deferral_kinds:
+      none: "Sans différé"
+      partial: "Différé partiel (intérêts seuls)"
+      total: "Différé total (intérêts capitalisés)"
+    insurance_modes:
+      none: "Sans assurance"
+      fixed: "Montant fixe par échéance"
+      initial: "Taux annuel sur le capital initial"
+      remaining: "Taux annuel sur le capital restant dû"
+    prepayment_modes:
+      duration: "Réduire la durée"
+      installment: "Réduire l'échéance"
+    loan_reasons:
+      initial: "Tableau initial"
+      prepayment: "Remboursement anticipé partiel"
+      repaid: "Remboursement anticipé total"
+    period_kinds:
+      monthly: "Mensuel"
+      annual: "Annuel"
+    document_kinds:
+      invoice: "Facture"
+      receipt: "Reçu"
+      tax_receipt: "Reçu fiscal"
+      certificate: "Attestation"
+      tax_notice: "Avis d'imposition"
+      other: "Autre justificatif"
+    tax_sections:
+      donations: "Dons"
+      home_employment: "Emploi d'un salarié à domicile"
+      professional_expenses: "Frais réels"
+      rental: "Revenus fonciers"
+    tax_boxes:
+      7uf: "dons aux œuvres"
+      7ud: "dons aux organismes d'aide aux personnes en difficulté"
+      7db: "sommes versées pour l'emploi d'un salarié à domicile"
+      7dr: "aides perçues"
+      1ak: "frais réels du déclarant 1"
+      1bk: "frais réels du déclarant 2"
+      4be: "micro-foncier, recettes brutes"
+      4ba: "revenus fonciers (2044)"
+    labels:
+      opening: "Solde d'ouverture — %{label}"
+      transfer: "Virement vers %{label}"
+      installment: "Échéance %{number} — %{label}"
+      mileage: "Frais kilométriques — %{label} (%{power} CV, %{km} km)"
+      budget: "Budget %{year}"
+      current_account: "Compte courant"
+      household: "Foyer"
+      aids: "Aides perçues"
+      correction: "Correction"
+      deletion: "Suppression"
+      loan: "Emprunt"
+      prepayment: "Remboursement anticipé"
+      total: "Total"
+    csv:
+      operations: "Date,Compte,Sorte,Bénéficiaire,Catégorie,Montant,Membre,Note,Écriture,Origine"
+      accounts: "Compte,Nature,Établissement,Titulaires,Solde,Valeur,Dernière valorisation,Clos"
+      valuations: "Compte,Date,Montant,Titre,Quantité,Cours,Note"
+      tax: "Rubrique,Cases,Libellé,Date,Écriture,Montant,Justificatifs"
+    pdf:
+      title: "Aide à la déclaration des revenus %{year}"
+      subtitle: "Revenus de l'année %{year}"
+      notice: "Aide établie à partir des opérations saisies : à vérifier avant de déclarer. Pas de télédéclaration."
+      item: "Libellé"
+      boxes: "Cases"
+      amount: "Montant"
+    errors:
+      account:
+        blank: "Choisissez un compte."
+        invalid: "Ce compte n'existe pas ou ne vous est pas ouvert."
+        read_only: "Vous ne pouvez que consulter ce compte."
+        closed: "Ce compte est clos."
+        label:
+          blank: "Le libellé est obligatoire."
+          too_long: "Le libellé ne doit pas dépasser %{max} caractères."
+        institution:
+          too_long: "L'établissement ne doit pas dépasser 120 caractères."
+        asset_kind:
+          invalid: "Choisissez le genre du bien."
+          not_property: "Seul un bien a un genre."
+        rate:
+          invalid: "Le taux doit être compris entre 0 et 100 %."
+        ceiling:
+          invalid: "Le plafond doit être positif."
+        holder:
+          invalid: "Ce titulaire n'est pas un membre du foyer."
+        nature:
+          invalid: "Nature de compte inconnue."
+          unavailable: "Cette nature de compte n'existe pas dans ce pays."
+        ledger:
+          invalid: "Ce journal n'existe pas ou ne vous est pas ouvert."
+          not_financial: "Seul un journal financier peut devenir un compte du foyer."
+          taken: "Ce journal est déjà un compte du foyer."
+        number:
+          invalid: "Ce compte du plan n'existe pas."
+          taken: "Ce compte du plan est déjà celui d'un compte du foyer."
+        bank_category:
+          missing: "La catégorie de fiches « Banque » est absente du dossier."
+        misc_ledger:
+          missing: "Aucun journal d'opérations diverses ne vous est ouvert pour le solde d'ouverture."
+      category:
+        label:
+          blank: "Le libellé est obligatoire."
+          too_long: "Le libellé ne doit pas dépasser %{max} caractères."
+        kind:
+          invalid: "Choisissez recettes ou dépenses."
+          locked: "Le sens d'une catégorie ne change pas."
+        tax_tag:
+          invalid: "Étiquette fiscale inconnue."
+        parent:
+          invalid: "Cette catégorie parente n'existe pas."
+          depth: "Les catégories n'ont que deux niveaux."
+          kind: "La catégorie parente doit être du même sens."
+        has_children: "Cette catégorie a des sous-catégories : supprimez-les d'abord."
+        in_use: "Cette catégorie est employée : retirez-la plutôt que de la supprimer."
+      operation:
+        kind:
+          invalid: "Choisissez dépense, recette ou virement."
+        amount:
+          positive: "Le montant doit être positif."
+          cents: "Le montant s'écrit au centime."
+        payee:
+          too_long: "Le bénéficiaire ne doit pas dépasser %{max} caractères."
+        note:
+          too_long: "La note ne doit pas dépasser %{max} caractères."
+        member:
+          invalid: "Ce membre n'existe pas."
+        transfer:
+          same_account: "Choisissez un autre compte de destination."
+        category:
+          blank: "Choisissez une catégorie."
+          invalid: "Cette catégorie n'existe pas ou n'est plus employée."
+          kind: "Cette catégorie n'est pas du sens de l'opération."
+          has_children: "Choisissez une sous-catégorie."
+        splits:
+          total: "La ventilation (%{total}) doit faire le montant de l'opération (%{amount})."
+        date:
+          out_of_range: "Cette date est hors des années tenues par le foyer."
+        not_posted: "L'opération n'a pas pu être passée."
+      document:
+        target:
+          one: "Un justificatif se rattache à une opération, à un compte ou à une année."
+        kind:
+          invalid: "Sorte de justificatif inconnue."
+        label:
+          too_long: "Le libellé ne doit pas dépasser 255 caractères."
+        entry:
+          invalid: "Cette opération n'existe pas ou ne vous est pas ouverte."
+        year:
+          invalid: "Année invalide."
+      recurring:
+        payee:
+          blank: "Le bénéficiaire ou le payeur est obligatoire."
+        frequency:
+          invalid: "Fréquence inconnue."
+        interval:
+          invalid: "L'intervalle doit être de 1 à 366 jours."
+        last_on:
+          before: "La dernière date doit suivre la première."
+        due:
+          unknown: "Cette échéance n'existe pas."
+          done: "Cette échéance a déjà été traitée."
+          not_reopenable: "Seule une échéance écartée ou rapprochée se rouvre."
+      loan:
+        account:
+          not_debt: "Un emprunt se rattache à un compte de dette."
+          taken: "Ce compte a déjà son emprunt."
+        payment:
+          not_cash: "L'emprunt se règle depuis un compte courant ou un livret."
+        principal:
+          positive: "Le capital doit être positif."
+        rate:
+          invalid: "Le taux doit être compris entre 0 et 100 %."
+        months:
+          invalid: "La durée doit être de 1 à 600 échéances."
+        deferral:
+          invalid: "Sorte de différé inconnue."
+          months: "La durée du différé doit être inférieure à celle du prêt (nulle sans différé)."
+        insurance:
+          invalid: "Mode d'assurance inconnu."
+          value: "Le montant ou le taux d'assurance ne peut pas être négatif."
+        category:
+          blank: "Choisissez la catégorie de l'assurance."
+          invalid: "Choisissez une catégorie de dépenses."
+        prepayment:
+          mode: "Choisissez de réduire la durée ou l'échéance."
+          positive: "Le montant remboursé doit être positif."
+          before: "Le remboursement doit suivre la dernière version du tableau."
+          after_end: "L'emprunt est déjà remboursé à cette date."
+          too_much: "Le montant dépasse le capital restant dû (%{remaining})."
+        installment:
+          unknown: "Cette échéance n'est pas au tableau."
+          done: "Cette échéance a déjà été confirmée."
+      valuation:
+        account:
+          not_valued: "Seuls les placements et les biens se valorisent."
+        amount:
+          invalid: "La valeur doit être positive ou nulle."
+        lines:
+          not_securities: "Seuls un PEA ou un compte-titres se valorisent ligne à ligne."
+          too_many: "Trop de lignes."
+        security:
+          blank: "Le titre est obligatoire."
+        quantity:
+          positive: "La quantité doit être positive."
+        price:
+          invalid: "Le cours ne peut pas être négatif."
+        note:
+          too_long: "La note ne doit pas dépasser 255 caractères."
+        date:
+          taken: "Une valeur est déjà saisie à cette date."
+      budget:
+        year:
+          taken: "Le budget %{year} existe déjà."
+          missing: "L'année %{year} n'est pas tenue par le dossier."
+        amount:
+          invalid: "Le montant ne peut pas être négatif."
+        period_kind:
+          invalid: "Choisissez mensuel ou annuel."
+        category:
+          taken: "Cette catégorie est déjà budgétée."
+          overlap: "Une catégorie parente ou une sous-catégorie est déjà budgétée."
+        forecast:
+          broken: "La prévision de ce budget a été modifiée dans la Comptabilité."
+      member:
+        name:
+          blank: "Le prénom d'affichage est obligatoire."
+          too_long: "Le prénom d'affichage ne doit pas dépasser 80 caractères."
+        role:
+          invalid: "Rôle inconnu."
+        user:
+          invalid: "Cet utilisateur n'existe pas."
+          taken: "Cet utilisateur est déjà membre du foyer."
+      mileage:
+        year:
+          invalid: "Année invalide."
+        power:
+          invalid: "La puissance fiscale doit être de 1 à 99 CV."
+        coefficient:
+          invalid: "Le coefficient ne peut pas être négatif."
+        max_km:
+          invalid: "La borne de distance doit être positive."
+        duplicate: "Chaque tranche ne figure qu'une fois."
+      trip:
+        year:
+          invalid: "Année invalide."
+        kilometers:
+          invalid: "La distance doit être de 1 à 200 000 km."
+        label:
+          too_long: "Le libellé ne doit pas dépasser 255 caractères."

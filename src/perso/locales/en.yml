@@ -1,0 +1,323 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+en:
+  perso:
+    module:
+      name: "Household finances"
+    permissions:
+      read: "View the household finances"
+      write: "Record and correct transactions, confirm scheduled items"
+      budget: "Manage budgets and valuations"
+      admin: "Administer the household: accounts, categories, rules, members, scales"
+    menu:
+      perso: "My household"
+      perso_operations: "Transactions"
+      perso_accounts: "Accounts"
+      perso_schedule: "Schedule"
+      perso_budgets: "Budgets"
+      perso_wealth: "Net worth"
+      perso_tax: "Income tax return"
+      perso_categories: "Household categories"
+      perso_rules: "Household categorisation rules"
+      perso_members: "Household members"
+      perso_settings: "Household settings"
+    natures:
+      current: "Current account"
+      savings: "Savings account"
+      life_insurance: "Life insurance"
+      pea: "PEA"
+      securities: "Securities account"
+      mortgage: "Mortgage"
+      other_debt: "Other debt"
+      property: "Property"
+    asset_kinds:
+      residence: "Main residence"
+      real_estate: "Other real estate"
+      vehicle: "Vehicle"
+      other: "Other property"
+    category_kinds:
+      expense: "Expenses"
+      income: "Income"
+    tax_tags:
+      donation: "Donation"
+      home_employment: "Home employment"
+      home_employment_aid: "Home employment aid"
+      professional_expenses: "Work expenses"
+      rental_income: "Rental income"
+      rental_charges: "Rental charge"
+    member_roles:
+      adult: "Adult"
+      minor: "Minor"
+      advisor: "Advisor (read only)"
+    operation_kinds:
+      expense: "Expense"
+      income: "Income"
+      transfer: "Transfer between accounts"
+    operation_statuses:
+      active: "Current"
+      replaced: "Corrected"
+      deleted: "Deleted"
+    sources:
+      perso: "Entered"
+      bankimport: "Imported statement"
+      other: "Accounting"
+    frequencies:
+      monthly: "Monthly"
+      quarterly: "Quarterly"
+      yearly: "Yearly"
+      days: "Every N days"
+    due_statuses:
+      upcoming: "Upcoming"
+      overdue: "Overdue"
+      confirmed: "Confirmed"
+      matched: "Matched with a statement"
+      skipped: "Skipped"
+    deferral_kinds:
+      none: "No deferral"
+      partial: "Partial deferral (interest only)"
+      total: "Total deferral (capitalised interest)"
+    insurance_modes:
+      none: "No insurance"
+      fixed: "Fixed amount per instalment"
+      initial: "Yearly rate on the initial principal"
+      remaining: "Yearly rate on the outstanding principal"
+    prepayment_modes:
+      duration: "Shorten the term"
+      installment: "Lower the instalment"
+    loan_reasons:
+      initial: "Initial schedule"
+      prepayment: "Partial early repayment"
+      repaid: "Full early repayment"
+    period_kinds:
+      monthly: "Monthly"
+      annual: "Yearly"
+    document_kinds:
+      invoice: "Invoice"
+      receipt: "Receipt"
+      tax_receipt: "Tax receipt"
+      certificate: "Certificate"
+      tax_notice: "Tax notice"
+      other: "Other document"
+    tax_sections:
+      donations: "Donations"
+      home_employment: "Home employee"
+      professional_expenses: "Actual work expenses"
+      rental: "Rental income"
+    tax_boxes:
+      7uf: "donations to charities"
+      7ud: "donations to organisations helping people in need"
+      7db: "amounts paid for a home employee"
+      7dr: "aid received"
+      1ak: "actual expenses of filer 1"
+      1bk: "actual expenses of filer 2"
+      4be: "simplified rental regime, gross receipts"
+      4ba: "rental income (form 2044)"
+    labels:
+      opening: "Opening balance — %{label}"
+      transfer: "Transfer to %{label}"
+      installment: "Instalment %{number} — %{label}"
+      mileage: "Mileage allowance — %{label} (%{power} CV, %{km} km)"
+      budget: "Budget %{year}"
+      current_account: "Current account"
+      household: "Household"
+      aids: "Aid received"
+      correction: "Correction"
+      deletion: "Deletion"
+      loan: "Loan"
+      prepayment: "Early repayment"
+      total: "Total"
+    csv:
+      operations: "Date,Account,Kind,Payee,Category,Amount,Member,Note,Entry,Origin"
+      accounts: "Account,Nature,Institution,Holders,Balance,Value,Last valuation,Closed"
+      valuations: "Account,Date,Amount,Security,Quantity,Price,Note"
+      tax: "Section,Boxes,Label,Date,Entry,Amount,Documents"
+    pdf:
+      title: "Income tax return help %{year}"
+      subtitle: "Income of the year %{year}"
+      notice: "Help computed from the recorded transactions: check before filing. No electronic filing."
+      item: "Label"
+      boxes: "Boxes"
+      amount: "Amount"
+    errors:
+      account:
+        blank: "Choose an account."
+        invalid: "This account does not exist or is not open to you."
+        read_only: "You can only view this account."
+        closed: "This account is closed."
+        label:
+          blank: "The label is required."
+          too_long: "The label must not exceed %{max} characters."
+        institution:
+          too_long: "The institution must not exceed 120 characters."
+        asset_kind:
+          invalid: "Choose the kind of property."
+          not_property: "Only a property has a kind."
+        rate:
+          invalid: "The rate must be between 0 and 100%."
+        ceiling:
+          invalid: "The ceiling must be positive."
+        holder:
+          invalid: "This holder is not a household member."
+        nature:
+          invalid: "Unknown account nature."
+          unavailable: "This account nature does not exist in this country."
+        ledger:
+          invalid: "This journal does not exist or is not open to you."
+          not_financial: "Only a financial journal can become a household account."
+          taken: "This journal is already a household account."
+        number:
+          invalid: "This chart account does not exist."
+          taken: "This chart account already belongs to a household account."
+        bank_category:
+          missing: "The “Bank” card category is absent from the file."
+        misc_ledger:
+          missing: "No miscellaneous journal is open to you for the opening balance."
+      category:
+        label:
+          blank: "The label is required."
+          too_long: "The label must not exceed %{max} characters."
+        kind:
+          invalid: "Choose income or expenses."
+          locked: "The direction of a category does not change."
+        tax_tag:
+          invalid: "Unknown tax tag."
+        parent:
+          invalid: "This parent category does not exist."
+          depth: "Categories have only two levels."
+          kind: "The parent category must have the same direction."
+        has_children: "This category has subcategories: delete them first."
+        in_use: "This category is in use: retire it instead of deleting it."
+      operation:
+        kind:
+          invalid: "Choose expense, income or transfer."
+        amount:
+          positive: "The amount must be positive."
+          cents: "The amount is written to the cent."
+        payee:
+          too_long: "The payee must not exceed %{max} characters."
+        note:
+          too_long: "The note must not exceed %{max} characters."
+        member:
+          invalid: "This member does not exist."
+        transfer:
+          same_account: "Choose another destination account."
+        category:
+          blank: "Choose a category."
+          invalid: "This category does not exist or is no longer used."
+          kind: "This category does not match the direction of the transaction."
+          has_children: "Choose a subcategory."
+        splits:
+          total: "The split (%{total}) must equal the transaction amount (%{amount})."
+        date:
+          out_of_range: "This date is outside the years kept by the household."
+        not_posted: "The transaction could not be posted."
+      document:
+        target:
+          one: "A document is attached to a transaction, an account or a year."
+        kind:
+          invalid: "Unknown kind of document."
+        label:
+          too_long: "The label must not exceed 255 characters."
+        entry:
+          invalid: "This transaction does not exist or is not open to you."
+        year:
+          invalid: "Invalid year."
+      recurring:
+        payee:
+          blank: "The payee or payer is required."
+        frequency:
+          invalid: "Unknown frequency."
+        interval:
+          invalid: "The interval must be 1 to 366 days."
+        last_on:
+          before: "The last date must follow the first one."
+        due:
+          unknown: "This scheduled item does not exist."
+          done: "This scheduled item has already been handled."
+          not_reopenable: "Only a skipped or matched item can be reopened."
+      loan:
+        account:
+          not_debt: "A loan belongs to a debt account."
+          taken: "This account already has its loan."
+        payment:
+          not_cash: "The loan is paid from a current or savings account."
+        principal:
+          positive: "The principal must be positive."
+        rate:
+          invalid: "The rate must be between 0 and 100%."
+        months:
+          invalid: "The term must be 1 to 600 instalments."
+        deferral:
+          invalid: "Unknown kind of deferral."
+          months: "The deferral must be shorter than the loan (zero without deferral)."
+        insurance:
+          invalid: "Unknown insurance mode."
+          value: "The insurance amount or rate cannot be negative."
+        category:
+          blank: "Choose the insurance category."
+          invalid: "Choose an expense category."
+        prepayment:
+          mode: "Choose to shorten the term or lower the instalment."
+          positive: "The repaid amount must be positive."
+          before: "The repayment must follow the latest schedule version."
+          after_end: "The loan is already repaid at that date."
+          too_much: "The amount exceeds the outstanding principal (%{remaining})."
+        installment:
+          unknown: "This instalment is not in the schedule."
+          done: "This instalment has already been confirmed."
+      valuation:
+        account:
+          not_valued: "Only investments and property are valued."
+        amount:
+          invalid: "The value must be positive or zero."
+        lines:
+          not_securities: "Only a PEA or a securities account is valued line by line."
+          too_many: "Too many lines."
+        security:
+          blank: "The security is required."
+        quantity:
+          positive: "The quantity must be positive."
+        price:
+          invalid: "The price cannot be negative."
+        note:
+          too_long: "The note must not exceed 255 characters."
+        date:
+          taken: "A value is already recorded at that date."
+      budget:
+        year:
+          taken: "The %{year} budget already exists."
+          missing: "The year %{year} is not kept by the file."
+        amount:
+          invalid: "The amount cannot be negative."
+        period_kind:
+          invalid: "Choose monthly or yearly."
+        category:
+          taken: "This category is already budgeted."
+          overlap: "A parent category or a subcategory is already budgeted."
+        forecast:
+          broken: "The forecast of this budget was changed in Accounting."
+      member:
+        name:
+          blank: "The display name is required."
+          too_long: "The display name must not exceed 80 characters."
+        role:
+          invalid: "Unknown role."
+        user:
+          invalid: "This user does not exist."
+          taken: "This user is already a household member."
+      mileage:
+        year:
+          invalid: "Invalid year."
+        power:
+          invalid: "The fiscal power must be 1 to 99 CV."
+        coefficient:
+          invalid: "The coefficient cannot be negative."
+        max_km:
+          invalid: "The distance bound must be positive."
+        duplicate: "Each band appears only once."
+      trip:
+        year:
+          invalid: "Invalid year."
+        kilometers:
+          invalid: "The distance must be 1 to 200,000 km."
+        label:
+          too_long: "The label must not exceed 255 characters."

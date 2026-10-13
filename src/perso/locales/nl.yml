@@ -1,0 +1,323 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+nl:
+  perso:
+    module:
+      name: "Gezinsfinanciën"
+    permissions:
+      read: "De gezinsfinanciën raadplegen"
+      write: "Verrichtingen invoeren en corrigeren, vervaldagen bevestigen"
+      budget: "Budgetten en waarderingen bijhouden"
+      admin: "Het gezin beheren: rekeningen, categorieën, regels, leden, schalen"
+    menu:
+      perso: "Mijn gezin"
+      perso_operations: "Verrichtingen"
+      perso_accounts: "Rekeningen"
+      perso_schedule: "Vervaldagen"
+      perso_budgets: "Budgetten"
+      perso_wealth: "Vermogen"
+      perso_tax: "Belastingaangifte"
+      perso_categories: "Categorieën van het gezin"
+      perso_rules: "Categoriseringsregels van het gezin"
+      perso_members: "Gezinsleden"
+      perso_settings: "Instellingen van het gezin"
+    natures:
+      current: "Zichtrekening"
+      savings: "Spaarrekening"
+      life_insurance: "Levensverzekering"
+      pea: "PEA"
+      securities: "Effectenrekening"
+      mortgage: "Hypothecaire lening"
+      other_debt: "Andere schuld"
+      property: "Goed"
+    asset_kinds:
+      residence: "Hoofdverblijf"
+      real_estate: "Ander vastgoed"
+      vehicle: "Voertuig"
+      other: "Ander goed"
+    category_kinds:
+      expense: "Uitgaven"
+      income: "Inkomsten"
+    tax_tags:
+      donation: "Gift"
+      home_employment: "Huishoudelijke tewerkstelling"
+      home_employment_aid: "Steun voor huishoudelijke tewerkstelling"
+      professional_expenses: "Beroepskosten"
+      rental_income: "Huurinkomsten"
+      rental_charges: "Huurlasten"
+    member_roles:
+      adult: "Volwassene"
+      minor: "Minderjarige"
+      advisor: "Adviseur (alleen lezen)"
+    operation_kinds:
+      expense: "Uitgave"
+      income: "Inkomst"
+      transfer: "Overschrijving tussen rekeningen"
+    operation_statuses:
+      active: "Geldig"
+      replaced: "Gecorrigeerd"
+      deleted: "Verwijderd"
+    sources:
+      perso: "Ingevoerd"
+      bankimport: "Geïmporteerd uittreksel"
+      other: "Boekhouding"
+    frequencies:
+      monthly: "Maandelijks"
+      quarterly: "Driemaandelijks"
+      yearly: "Jaarlijks"
+      days: "Om de N dagen"
+    due_statuses:
+      upcoming: "Komend"
+      overdue: "Achterstallig"
+      confirmed: "Bevestigd"
+      matched: "Afgestemd op een uittreksel"
+      skipped: "Overgeslagen"
+    deferral_kinds:
+      none: "Zonder uitstel"
+      partial: "Gedeeltelijk uitstel (alleen interest)"
+      total: "Volledig uitstel (gekapitaliseerde interest)"
+    insurance_modes:
+      none: "Zonder verzekering"
+      fixed: "Vast bedrag per vervaldag"
+      initial: "Jaarlijks percentage op het oorspronkelijke kapitaal"
+      remaining: "Jaarlijks percentage op het openstaande kapitaal"
+    prepayment_modes:
+      duration: "De looptijd verkorten"
+      installment: "De aflossing verlagen"
+    loan_reasons:
+      initial: "Oorspronkelijke tabel"
+      prepayment: "Gedeeltelijke vervroegde terugbetaling"
+      repaid: "Volledige vervroegde terugbetaling"
+    period_kinds:
+      monthly: "Maandelijks"
+      annual: "Jaarlijks"
+    document_kinds:
+      invoice: "Factuur"
+      receipt: "Ontvangstbewijs"
+      tax_receipt: "Fiscaal attest"
+      certificate: "Attest"
+      tax_notice: "Aanslagbiljet"
+      other: "Ander bewijsstuk"
+    tax_sections:
+      donations: "Giften"
+      home_employment: "Huishoudelijk personeel"
+      professional_expenses: "Werkelijke beroepskosten"
+      rental: "Huurinkomsten"
+    tax_boxes:
+      7uf: "giften aan goede doelen"
+      7ud: "giften aan organisaties voor mensen in nood"
+      7db: "bedragen betaald voor huishoudelijk personeel"
+      7dr: "ontvangen steun"
+      1ak: "werkelijke kosten van aangever 1"
+      1bk: "werkelijke kosten van aangever 2"
+      4be: "vereenvoudigd huurstelsel, bruto-ontvangsten"
+      4ba: "huurinkomsten (formulier 2044)"
+    labels:
+      opening: "Beginsaldo — %{label}"
+      transfer: "Overschrijving naar %{label}"
+      installment: "Vervaldag %{number} — %{label}"
+      mileage: "Kilometervergoeding — %{label} (%{power} pk, %{km} km)"
+      budget: "Budget %{year}"
+      current_account: "Zichtrekening"
+      household: "Gezin"
+      aids: "Ontvangen steun"
+      correction: "Correctie"
+      deletion: "Verwijdering"
+      loan: "Lening"
+      prepayment: "Vervroegde terugbetaling"
+      total: "Totaal"
+    csv:
+      operations: "Datum,Rekening,Soort,Begunstigde,Categorie,Bedrag,Lid,Notitie,Boeking,Oorsprong"
+      accounts: "Rekening,Aard,Instelling,Houders,Saldo,Waarde,Laatste waardering,Afgesloten"
+      valuations: "Rekening,Datum,Bedrag,Effect,Aantal,Koers,Notitie"
+      tax: "Rubriek,Vakken,Omschrijving,Datum,Boeking,Bedrag,Bewijsstukken"
+    pdf:
+      title: "Hulp bij de belastingaangifte %{year}"
+      subtitle: "Inkomsten van het jaar %{year}"
+      notice: "Hulp opgesteld uit de ingevoerde verrichtingen: na te kijken vóór de aangifte. Geen elektronische aangifte."
+      item: "Omschrijving"
+      boxes: "Vakken"
+      amount: "Bedrag"
+    errors:
+      account:
+        blank: "Kies een rekening."
+        invalid: "Deze rekening bestaat niet of is niet voor u open."
+        read_only: "U kunt deze rekening alleen raadplegen."
+        closed: "Deze rekening is afgesloten."
+        label:
+          blank: "De omschrijving is verplicht."
+          too_long: "De omschrijving mag niet langer zijn dan %{max} tekens."
+        institution:
+          too_long: "De instelling mag niet langer zijn dan 120 tekens."
+        asset_kind:
+          invalid: "Kies het soort goed."
+          not_property: "Alleen een goed heeft een soort."
+        rate:
+          invalid: "Het percentage moet tussen 0 en 100 % liggen."
+        ceiling:
+          invalid: "Het plafond moet positief zijn."
+        holder:
+          invalid: "Deze houder is geen gezinslid."
+        nature:
+          invalid: "Onbekende rekeningaard."
+          unavailable: "Deze rekeningaard bestaat niet in dit land."
+        ledger:
+          invalid: "Dit dagboek bestaat niet of is niet voor u open."
+          not_financial: "Alleen een financieel dagboek kan een gezinsrekening worden."
+          taken: "Dit dagboek is al een gezinsrekening."
+        number:
+          invalid: "Deze rekening van het rekeningstelsel bestaat niet."
+          taken: "Deze rekening van het rekeningstelsel hoort al bij een gezinsrekening."
+        bank_category:
+          missing: "De fichecategorie „Bank” ontbreekt in het dossier."
+        misc_ledger:
+          missing: "Geen dagboek voor diverse verrichtingen is voor u open voor het beginsaldo."
+      category:
+        label:
+          blank: "De omschrijving is verplicht."
+          too_long: "De omschrijving mag niet langer zijn dan %{max} tekens."
+        kind:
+          invalid: "Kies inkomsten of uitgaven."
+          locked: "De richting van een categorie verandert niet."
+        tax_tag:
+          invalid: "Onbekend fiscaal label."
+        parent:
+          invalid: "Deze bovenliggende categorie bestaat niet."
+          depth: "Categorieën hebben maar twee niveaus."
+          kind: "De bovenliggende categorie moet dezelfde richting hebben."
+        has_children: "Deze categorie heeft subcategorieën: verwijder die eerst."
+        in_use: "Deze categorie wordt gebruikt: zet ze buiten gebruik in plaats van ze te verwijderen."
+      operation:
+        kind:
+          invalid: "Kies uitgave, inkomst of overschrijving."
+        amount:
+          positive: "Het bedrag moet positief zijn."
+          cents: "Het bedrag wordt tot op de cent geschreven."
+        payee:
+          too_long: "De begunstigde mag niet langer zijn dan %{max} tekens."
+        note:
+          too_long: "De notitie mag niet langer zijn dan %{max} tekens."
+        member:
+          invalid: "Dit lid bestaat niet."
+        transfer:
+          same_account: "Kies een andere bestemmingsrekening."
+        category:
+          blank: "Kies een categorie."
+          invalid: "Deze categorie bestaat niet of wordt niet meer gebruikt."
+          kind: "Deze categorie past niet bij de richting van de verrichting."
+          has_children: "Kies een subcategorie."
+        splits:
+          total: "De opsplitsing (%{total}) moet gelijk zijn aan het bedrag van de verrichting (%{amount})."
+        date:
+          out_of_range: "Deze datum valt buiten de jaren die het gezin bijhoudt."
+        not_posted: "De verrichting kon niet geboekt worden."
+      document:
+        target:
+          one: "Een bewijsstuk hoort bij een verrichting, een rekening of een jaar."
+        kind:
+          invalid: "Onbekend soort bewijsstuk."
+        label:
+          too_long: "De omschrijving mag niet langer zijn dan 255 tekens."
+        entry:
+          invalid: "Deze verrichting bestaat niet of is niet voor u open."
+        year:
+          invalid: "Ongeldig jaar."
+      recurring:
+        payee:
+          blank: "De begunstigde of betaler is verplicht."
+        frequency:
+          invalid: "Onbekende frequentie."
+        interval:
+          invalid: "Het interval moet 1 tot 366 dagen zijn."
+        last_on:
+          before: "De laatste datum moet na de eerste komen."
+        due:
+          unknown: "Deze vervaldag bestaat niet."
+          done: "Deze vervaldag werd al behandeld."
+          not_reopenable: "Alleen een overgeslagen of afgestemde vervaldag kan heropend worden."
+      loan:
+        account:
+          not_debt: "Een lening hoort bij een schuldrekening."
+          taken: "Deze rekening heeft al haar lening."
+        payment:
+          not_cash: "De lening wordt betaald vanaf een zicht- of spaarrekening."
+        principal:
+          positive: "Het kapitaal moet positief zijn."
+        rate:
+          invalid: "Het percentage moet tussen 0 en 100 % liggen."
+        months:
+          invalid: "De looptijd moet 1 tot 600 vervaldagen zijn."
+        deferral:
+          invalid: "Onbekend soort uitstel."
+          months: "Het uitstel moet korter zijn dan de lening (nul zonder uitstel)."
+        insurance:
+          invalid: "Onbekende verzekeringswijze."
+          value: "Het bedrag of percentage van de verzekering kan niet negatief zijn."
+        category:
+          blank: "Kies de categorie van de verzekering."
+          invalid: "Kies een uitgavencategorie."
+        prepayment:
+          mode: "Kies de looptijd of de aflossing te verlagen."
+          positive: "Het terugbetaalde bedrag moet positief zijn."
+          before: "De terugbetaling moet na de laatste versie van de tabel komen."
+          after_end: "De lening is op die datum al terugbetaald."
+          too_much: "Het bedrag overschrijdt het openstaande kapitaal (%{remaining})."
+        installment:
+          unknown: "Deze vervaldag staat niet in de tabel."
+          done: "Deze vervaldag werd al bevestigd."
+      valuation:
+        account:
+          not_valued: "Alleen beleggingen en goederen worden gewaardeerd."
+        amount:
+          invalid: "De waarde moet positief of nul zijn."
+        lines:
+          not_securities: "Alleen een PEA of een effectenrekening wordt lijn per lijn gewaardeerd."
+          too_many: "Te veel lijnen."
+        security:
+          blank: "Het effect is verplicht."
+        quantity:
+          positive: "Het aantal moet positief zijn."
+        price:
+          invalid: "De koers kan niet negatief zijn."
+        note:
+          too_long: "De notitie mag niet langer zijn dan 255 tekens."
+        date:
+          taken: "Op die datum is al een waarde ingevoerd."
+      budget:
+        year:
+          taken: "Het budget %{year} bestaat al."
+          missing: "Het jaar %{year} wordt niet bijgehouden in het dossier."
+        amount:
+          invalid: "Het bedrag kan niet negatief zijn."
+        period_kind:
+          invalid: "Kies maandelijks of jaarlijks."
+        category:
+          taken: "Deze categorie heeft al een budget."
+          overlap: "Een bovenliggende categorie of een subcategorie heeft al een budget."
+        forecast:
+          broken: "De prognose van dit budget werd in de Boekhouding gewijzigd."
+      member:
+        name:
+          blank: "De weergavenaam is verplicht."
+          too_long: "De weergavenaam mag niet langer zijn dan 80 tekens."
+        role:
+          invalid: "Onbekende rol."
+        user:
+          invalid: "Deze gebruiker bestaat niet."
+          taken: "Deze gebruiker is al gezinslid."
+      mileage:
+        year:
+          invalid: "Ongeldig jaar."
+        power:
+          invalid: "Het fiscaal vermogen moet 1 tot 99 pk zijn."
+        coefficient:
+          invalid: "De coëfficiënt kan niet negatief zijn."
+        max_km:
+          invalid: "De afstandsgrens moet positief zijn."
+        duplicate: "Elke schijf komt maar één keer voor."
+      trip:
+        year:
+          invalid: "Ongeldig jaar."
+        kilometers:
+          invalid: "De afstand moet 1 tot 200.000 km zijn."
+        label:
+          too_long: "De omschrijving mag niet langer zijn dan 255 tekens."

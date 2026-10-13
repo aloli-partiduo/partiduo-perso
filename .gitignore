@@ -1,0 +1,13 @@
+.env
+.icr_*
+.vscode/
+.DS_Store
+*.dwarf
+/.shards/
+/lib/
+/bin/
+/tmp/
+/media/
+/.bundle/
+# Override local du développement (scripts/override-local.sh), jamais versionné.
+/shard.override.yml

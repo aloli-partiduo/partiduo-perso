@@ -1,0 +1,171 @@
+= partiduo-perso — finances personnelles d'un foyer
+:toc: left
+:toc-title: Table des matières
+:icons: font
+
+*Partiduo* est le portage en Crystal de https://noalyss.eu[NOALYSS], logiciel
+libre de comptabilité créé et maintenu par *Dany De Bontridder*. Partiduo
+n'est pas un projet officiel NOALYSS.
+
+Ce dépôt est l'extension `PERSO` de Partiduo (ADR-011), sans équivalent dans
+l'application d'origine (la source *legacy*) : elle ouvre le *dossier d'un
+foyer*. La saisie se fait en recettes et dépenses, par catégories de tous les
+jours ; en arrière-plan, chaque catégorie est un compte des classes 6 et 7 et
+chaque compte du foyer un journal financier, tenus en partie double par le
+module Comptabilité et écrits par son seul service d'écriture. Toute
+correction passe par extourne : l'historique garde l'original.
+
+Spécification : `../partiduo-docs/adr/ADR-011-finances-personnelles.adoc`
+(D1 à D12, amendements A1 à A3), avec ADR-003 (contrat d'extension), ADR-005
+(interface), ADR-006 (Comptabilité). Décisions (`D-PER-*`) et amendements
+proposés : link:DECISIONS.adoc[]. Référence du contrat :
+link:doc/api/perso.adoc[].
+
+== Fonctions
+
+[cols="1,3",options="header"]
+|===
+|Fonction |Dans PERSO
+
+|Dossier foyer
+|Type `household` au provisionnement (`manage provision --kind=household`) :
+plan réduit, catégories et compte courant repris d'office ; modules et
+extensions d'entreprise incompatibles (Facturation, Micro-entreprise,
+Profession libérale, Stock, Suivi, Analytique, facturation électronique,
+Chorus Pro, télédéclarations, URSSAF, relation client, modèles).
+
+|Recettes et dépenses
+|Interface par défaut (menu réduit, tuiles, menus TVA, FEC et clôture
+écartés) ; opérations par catégorie ou ventilées, virements entre comptes,
+bénéficiaire, membre, note, justificatifs ; correction et suppression par
+extourne, versions successives avec auteur et date.
+
+|Comptes du foyer
+|Compte courant, livret (taux, plafond), assurance-vie, PEA, compte-titres,
+emprunt immobilier, autre dette, bien ; titulaires ; solde de la
+Comptabilité ; solde d'ouverture.
+
+|Emprunts
+|Tableau d'amortissement (différé partiel ou total, assurance fixe ou
+proportionnelle), remboursement anticipé partiel ou total en nouvelle
+version, confirmation des échéances.
+
+|Import et règles
+|Relevés CSV, OFX, QIF de `partiduo-bankimport` ; règles de catégorisation
+du foyer (celles de l'import, vers une catégorie) ; ligne importée
+rapprochée de l'échéance prévue.
+
+|Échéancier
+|Opérations récurrentes (mensuelle, trimestrielle, annuelle, tous les N
+jours, jour ouvré), échéances à confirmer ou à écarter, retards signalés,
+soldes prévisionnels.
+
+|Budgets
+|Une prévision de la Comptabilité par année ; montant mensuel ou annuel par
+catégorie ; réalisé, écart, reste, dépassements signalés ; proposition tirée
+de l'année précédente.
+
+|Patrimoine
+|Valorisations à la main (ligne à ligne pour un PEA, un compte-titres),
+plus-value latente, patrimoine net par nature et par membre, douze derniers
+mois.
+
+|Déclaration de revenus
+|Dons, emploi à domicile, frais réels (barème kilométrique daté), revenus
+fonciers ; cases de la déclaration en aide ; PDF et CSV ; pas de
+télédéclaration.
+
+|Membres
+|Prénom d'affichage, rôle (adulte, mineur, conseiller en lecture seule),
+comptes visibles par les droits par journal du socle.
+|===
+
+== Organisation
+
+[source]
+----
+src/
+├── partiduo-perso.cr          # point d'entrée du shard (requiert partiduo-bankimport)
+├── partiduo-perso/cli.cr      # migrations : require "partiduo-perso/cli"
+└── perso/                     # métier (application Marten « perso »)
+    ├── app.cr, manifest.cr    # code PERSO, dépendances, incompatibilités, permissions, menus, abonnements
+    ├── initial_data.cr        # catégories et compte courant d'un dossier foyer neuf
+    ├── models/                # tables perso_*
+    ├── migrations/            # 0001 : tables et contraintes
+    ├── services/              # catégories, comptes, opérations, emprunts, échéancier, budgets, patrimoine, déclaration (interne)
+    ├── api/                   # contrat public Perso::Api
+    ├── data/                  # barème kilométrique et cases de la déclaration, datés
+    └── locales/               # fr, en, nl
+ui/
+└── bulma/                     # interface pour partiduo-ui-bulma (application « perso_ui »)
+    ├── bulma.cr               # routes sous /ext/PERSO/, variante « Recettes et dépenses », compteur
+    ├── dashboard_tile.cr      # tuiles du foyer
+    ├── handlers/, templates/perso/, locales/
+----
+
+== Composer une distribution
+
+[source,crystal]
+----
+require "partiduo-ui-bulma/partiduo_ui"
+require "partiduo-bankimport"
+require "partiduo-bankimport/ui/bulma"
+require "partiduo-perso"
+require "partiduo-perso/ui/bulma"
+# installed_apps += Perso::INSTALLED_APPS + Perso::Ui::INSTALLED_APPS
+# ligne de commande : require "partiduo-perso/cli"
+----
+
+L'extension exige la Comptabilité et l'import des relevés
+(`depends_on "ACCOUNTING", "BANKIMPORT"`). Un dossier foyer se crée avec
+elle active :
+
+[source,sh]
+----
+PARTIDUO_MODULES=accounting,bankimport,perso partiduo-manage provision --kind=household …
+----
+
+== Développement local
+
+`shard.yml` et `shard.lock` référencent les shards maison sur GitHub
+(`aloli-crystal/*` et `aloli-partiduo/*`), suivis par branche. Le verrou
+versionné ne contient aucune dépendance `path:` : les ports FreeBSD et la CI
+l'exigent.
+
+Pour travailler sur les copies de travail voisines (`../../prod-crystal/<nom>`
+et `../partiduo-<dépôt>`), lancer :
+
+[source,sh]
+----
+scripts/override-local.sh
+----
+
+Le script génère un `shard.override.yml` *local et non versionné* (ignoré par
+git), installe les shards, puis remet `shard.lock` à son état versionné.
+Une copie de travail absente reste prise sur GitHub.
+
+Pour régénérer le verrou versionné, supprimer d'abord l'override local :
+
+[source,sh]
+----
+rm -f shard.override.yml
+SKIP_MARTEN_CLI_PRECOMPILATION=1 shards update
+scripts/override-local.sh   # retour au mode local
+----
+
+== Commandes
+
+[source,sh]
+----
+cd prod-partiduo/partiduo-perso
+SKIP_MARTEN_CLI_PRECOMPILATION=1 shards install
+createdb -h /tmp partiduo_test_<agent>
+DATABASE_URL='postgres:///partiduo_test_<agent>?host=/tmp' crystal spec --order random
+crystal tool format src spec ui config scripts manage.cr && bin/ameba
+----
+
+== Version et licence
+
+Numéro dans `shard.yml` seulement (constante `Perso::VERSION` lue à la
+compilation) ; chaque commit en incrémente le dernier chiffre. Licence
+AGPL-3.0-or-later (fichier `LICENSE`).

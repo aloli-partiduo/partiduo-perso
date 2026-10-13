@@ -1,0 +1,49 @@
+name: partiduo-perso
+version: 0.1.0
+
+description: |
+  Extension des finances personnelles d'un foyer de Partiduo (ADR-011) :
+  dossier de type foyer, saisie en recettes et dépenses par catégories
+  rangées sur des comptes en partie double tenus par la Comptabilité,
+  comptes du foyer (courant, livret, assurance-vie, PEA, titres, emprunt
+  avec tableau d'amortissement versionné, biens), opérations récurrentes
+  et échéancier avec solde prévisionnel, budgets par catégorie sur les
+  prévisions de la Comptabilité, valorisations et patrimoine net, aide à
+  la déclaration de revenus. L'import des relevés est celui de
+  partiduo-bankimport.
+
+authors:
+  - Philippe Nénert <it+claude.ai@aloli.fr>
+
+crystal: ">= 1.19.1"
+
+license: AGPL-3.0-or-later
+
+targets:
+  partiduo-perso-manage:
+    main: manage.cr
+
+dependencies:
+  # Le cœur : registre, événements et contrat Partiduo::Api (Comptabilité,
+  # prévisions, fiches, exercices, pièces jointes, droits par journal).
+  partiduo:
+    github: aloli-partiduo/partiduo-app
+    branch: development
+  # L'import des relevés bancaires et ses règles de catégorisation
+  # (`depends_on "BANKIMPORT"`, ADR-011 D6) : contrat Bankimport::Api.
+  partiduo-bankimport:
+    github: aloli-partiduo/partiduo-bankimport
+    branch: development
+  marten:
+    github: aloli-crystal/marten
+    branch: production
+
+development_dependencies:
+  # L'interface qui monte ui/bulma/ : nécessaire aux specs et à manage.cr ;
+  # la distribution l'apporte elle-même.
+  partiduo-ui-bulma:
+    github: aloli-partiduo/partiduo-ui-bulma
+    branch: development
+  ameba:
+    github: crystal-ameba/ameba
+    version: "~> 1.6"
