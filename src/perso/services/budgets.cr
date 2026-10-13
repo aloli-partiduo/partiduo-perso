@@ -93,7 +93,7 @@ module Perso
       if current
         result = Acc.update_forecast_item(actor, current.forecast_item_id!.to_i64, item)
         return {nil, result.errors} if result.failure?
-        current.amount = input.amount
+        current.amount = Records.cents(input.amount)
         current.period_kind = input.period_kind
         current.save!
         return {current, [] of FieldError}
@@ -102,7 +102,7 @@ module Perso
       result = Acc.create_forecast_item(actor, group, item)
       return {nil, result.errors} if result.failure?
       row = BudgetLine.create!(budget_id: budget.id, category_id: category.id, period_kind: input.period_kind,
-        amount: input.amount, forecast_item_id: result.value!.id)
+        amount: Records.cents(input.amount), forecast_item_id: result.value!.id)
       {row, [] of FieldError}
     end
 

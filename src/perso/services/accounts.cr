@@ -129,7 +129,7 @@ module Perso
 
       row = Account.new(ledger_id: ledger_id, account_number: number, card_code: card_code, nature: input.nature,
         asset_kind: input.nature == "property" ? input.asset_kind : "", label: input.label.strip,
-        institution: input.institution.strip, rate: input.rate, ceiling: input.ceiling,
+        institution: input.institution.strip, rate: input.rate.try { |rate| Records.round(rate, 4) }, ceiling: input.ceiling.try { |ceiling| Records.cents(ceiling) },
         opened_on: input.opened_on.try { |day| Calendar.day(day) }, closed: false, position: input.position)
       row.save!
       set_holders(row, input.holder_ids)

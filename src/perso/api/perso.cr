@@ -153,8 +153,8 @@ module Perso
         row.label = input.label.strip
         row.institution = input.institution.strip
         row.asset_kind = row.nature == "property" ? input.asset_kind : ""
-        row.rate = input.rate
-        row.ceiling = input.ceiling
+        row.rate = input.rate.try { |rate| Records.round(rate, 4) }
+        row.ceiling = input.ceiling.try { |ceiling| Records.cents(ceiling) }
         row.opened_on = input.opened_on.try { |day| Calendar.day(day) }
         row.closed = input.closed
         row.position = input.position

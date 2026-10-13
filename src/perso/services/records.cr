@@ -25,6 +25,14 @@ module Perso
       Amortization.cents(value)
     end
 
+    # Valeur arrondie à `digits` décimales (demi au-dessus), échelle ramenée
+    # au plus juste : elle s'enregistre dans une colonne à `digits` décimales.
+    def self.round(value : BigDecimal, digits : Int32) : BigDecimal
+      text = value.round(digits, mode: :ties_away).to_s
+      text = text.rstrip('0').rstrip('.') if text.includes?('.')
+      BigDecimal.new(text.empty? || text == "-" ? "0" : text)
+    end
+
     def self.decimal(value : BigDecimal?) : BigDecimal
       value || ZERO
     end

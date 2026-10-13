@@ -63,7 +63,7 @@ module Perso
 
     def self.create(actor : Actor, input : Api::ValuationInput) : Valuation
       amounts = input.lines.map { |line| Records.cents(line.quantity * line.price) }
-      total = input.lines.empty? ? (input.amount || ZERO) : amounts.sum(ZERO)
+      total = Records.cents(input.lines.empty? ? (input.amount || ZERO) : amounts.sum(ZERO))
       row = Valuation.create!(account_id: input.account_id, valued_on: Calendar.day(input.valued_on), amount: total,
         note: input.note.strip, created_by_id: actor.user_id)
       input.lines.each_with_index do |line, index|

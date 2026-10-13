@@ -57,6 +57,12 @@ describe "Opérations récurrentes et échéancier (ADR-011 D7)" do
     occurrence.status.should eq("matched")
     occurrence.due_on.should eq(S.date("2026-07-05"))
     Api.schedule(S.parent, S.date("2026-09-28"), S.date("2026-09-30")).overdue_count.should eq(2)
+    energy = rent(payee: "EDF", amount: S.d("60"), estimated: true, category_id: S.category("Énergie").id,
+      first_on: S.date("2026-08-06"))
+    S.import_line("PRLV EDF", "-68.15", "6103", "07/08/2026")
+    matched = Perso::Occurrence.filter(recurring_id: energy.id).first!
+    matched.status.should eq("matched")
+    matched.amount.should eq(S.d("68.15"))
   end
 
   it "prévoit un virement d'épargne sur les deux comptes, et refuse une saisie incohérente" do

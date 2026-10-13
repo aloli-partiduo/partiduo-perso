@@ -230,7 +230,7 @@ module Perso
       row.category_id = input.kind == "transfer" ? nil : input.category_id
       row.to_account_id = input.kind == "transfer" ? input.to_account_id : nil
       row.payee = input.payee.strip
-      row.amount = input.amount
+      row.amount = Records.cents(input.amount)
       row.estimated = input.estimated
       row.frequency = input.frequency
       row.interval_days = input.frequency == "days" ? input.interval_days : nil
@@ -260,7 +260,7 @@ module Perso
         member_id: row.member_id.try(&.to_i64)))
       return {nil, errors} if operation.nil?
       Occurrence.create!(recurring_id: row.id, due_on: due_on, status: "confirmed", entry_id: operation.entry_id,
-        amount: amount, created_by_id: actor.user_id)
+        amount: Records.cents(amount), created_by_id: actor.user_id)
       {operation, [] of FieldError}
     end
 
@@ -302,7 +302,7 @@ module Perso
       end
       found = best || return false
       Occurrence.create!(recurring_id: found[0].id, due_on: found[1], status: "matched", entry_id: entry.id,
-        amount: amount.abs, created_by_id: entry.created_by_id)
+        amount: Records.cents(amount.abs), created_by_id: entry.created_by_id)
       true
     end
   end

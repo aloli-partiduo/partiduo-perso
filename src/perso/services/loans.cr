@@ -155,9 +155,11 @@ module Perso
       loan = Loan.create!(account_id: input.account_id, payment_account_id: input.payment_account_id,
         interest_category_id: input.interest_category_id, insurance_category_id: input.insurance_category_id)
       LoanVersion.create!(loan_id: loan.id, number: 1, effective_on: Calendar.day(input.first_due_on), reason: "initial",
-        principal: input.principal, initial_principal: input.principal, annual_rate: input.annual_rate, months: input.months,
+        principal: Records.cents(input.principal), initial_principal: Records.cents(input.principal),
+        annual_rate: Records.round(input.annual_rate, 5), months: input.months,
         first_due_on: Calendar.day(input.first_due_on), deferral_months: input.deferral_months,
-        deferral_kind: input.deferral_kind, insurance_mode: input.insurance_mode, insurance_value: input.insurance_value,
+        deferral_kind: input.deferral_kind, insurance_mode: input.insurance_mode,
+        insurance_value: Records.round(input.insurance_value, 5),
         created_by_id: actor.user_id)
       loan
     end
