@@ -47,6 +47,16 @@ module Perso
       Categories.view(Records.category!(id))
     end
 
+    # Catégorie d'un compte du plan (`62`, `6101`), pour les échanges avec
+    # d'autres programmes (chargement d'un dossier, import) : l'interface du
+    # foyer ne montre jamais ce numéro. `NotFound` si le compte n'est pas
+    # celui d'une catégorie.
+    def self.category_by_account(actor : Actor, number : String) : CategoryView
+      authorize!(actor, READ)
+      row = Category.filter(account: number.strip.upcase).first || raise Partiduo::Api::NotFound.new("perso_category", number)
+      Categories.view(row)
+    end
+
     # Crée une catégorie et son compte. Exige aussi
     # `accounting.account.write`.
     def self.create_category(actor : Actor, input : CategoryInput) : Result(CategoryView)

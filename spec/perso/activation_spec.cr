@@ -35,6 +35,8 @@ describe "Extension PERSO : manifeste, activation, dossier foyer (ADR-011 D1, D2
     S.category("Dons").tax_tag.should eq("donation")
     S.category("Emploi à domicile").tax_tag.should eq("home_employment")
     S.category("Salaires").kind.should eq("income")
+    Api.category_by_account(S.system, "6103").label.should eq("Énergie")
+    expect_raises(Partiduo::Api::NotFound) { Api.category_by_account(S.system, "512001") }
     current = S.current_account
     current.ledger_code.should eq("F01")
     current.balance.should eq(BigDecimal.new(0))
