@@ -54,7 +54,22 @@ module Perso
     # aussi `accounting.report.read` (comparaison de la prévision).
     def self.budget(actor : Actor, year : Int32) : BudgetView?
       authorize!(actor, READ)
-      Budget.filter(year: year).first.try { |row| Budgets.view(actor, row) }
+      row = Budget.filter(year: year).first || return
+      claim(actor, row)
+      Budgets.view(actor, row)
+    end
+
+    # Reprise d'un budget créé avant la prévision tenue (D-PER-020) : à la
+    # consultation par qui peut écrire les budgets, sa prévision devient
+    # tenue par l'extension ; sinon elle le deviendra à la prochaine
+    # écriture. Une prévision déjà modifiée hors de l'extension reste
+    # signalée (`budget.forecast.broken`) à l'écriture.
+    private def self.claim(actor : Actor, row : Budget) : Nil
+      return unless actor.can?(BUDGET) && actor.can?("accounting.report.write") && Budgets.unclaimed?(actor, row)
+      Transaction.run do
+        errors = Budgets.claim(actor, row)
+        errors.empty? ? Result(Nil).success(nil) : Result(Nil).failure(errors)
+      end
     end
 
     # Crée le budget d'une année (prévision de la Comptabilité). Exige

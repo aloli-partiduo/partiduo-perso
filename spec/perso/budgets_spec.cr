@@ -56,4 +56,50 @@ describe "Budgets sur les prévisions de la Comptabilité (ADR-011 D8)" do
     view.year.should eq(2027)
     view.lines.map { |line| {line.category_label, line.amount} }.sort!.should eq([{"Alimentation", S.d("200")}, {"Santé", S.d("10")}])
   end
+
+  it "tient la prévision du budget (owner PERSO) : l'écran commun ne peut ni la modifier ni la supprimer" do
+    S.setup
+    budget = Api.create_budget(S.parent, 2026).value!
+    summary = Acc.forecast(S.system, budget.forecast_id).forecast
+    summary.owner.should eq("PERSO")
+    Acc.delete_forecast(S.parent, budget.forecast_id).error_keys.should eq(["accounting.errors.forecast.owned"])
+    Acc.update_forecast(S.parent, budget.forecast_id, Acc::ForecastInput.new("Autre nom", summary.start_period_id,
+      summary.end_period_id)).error_keys.should eq(["accounting.errors.forecast.owned"])
+    Api.set_budget_line(S.parent, 2026, Api::BudgetLineInput.new(S.category("Alimentation").id, S.d("400"))).value!
+    view = present(Api.budget(S.parent, 2026))
+    group = Acc.forecast(S.system, budget.forecast_id).categories.first
+    Acc.delete_forecast_category(S.parent, group.id).error_keys.should eq(["accounting.errors.forecast.owned"])
+    Api.delete_budget_line(S.parent, 2026, view.lines.first.id).value!.lines.should be_empty
+  end
+
+  it "reprend un budget créé avant la prévision tenue : sa prévision devient tenue par PERSO" do
+    S.setup
+    budget = Api.create_budget(S.parent, 2026).value!
+    summary = Acc.forecast(S.system, budget.forecast_id).forecast
+    Acc.update_forecast(S.system, budget.forecast_id, Acc::ForecastInput.new(summary.name, summary.start_period_id,
+      summary.end_period_id, owner: ""), owner: "PERSO").value!
+    Acc.forecast(S.system, budget.forecast_id).forecast.owned?.should be_false
+
+    reader = S.actor("alice@example.com", [Api::READ, "accounting.report.read", "accounting.entry.read", "accounting.ledger.read"])
+    present(Api.budget(reader, 2026))
+    Acc.forecast(S.system, budget.forecast_id).forecast.owned?.should be_false
+    present(Api.budget(S.parent, 2026))
+    Acc.forecast(S.system, budget.forecast_id).forecast.owner.should eq("PERSO")
+
+    Acc.update_forecast(S.system, budget.forecast_id, Acc::ForecastInput.new(summary.name, summary.start_period_id,
+      summary.end_period_id, owner: ""), owner: "PERSO").value!
+    Api.set_budget_line(S.parent, 2026, Api::BudgetLineInput.new(S.category("Alimentation").id, S.d("400"))).value!
+    Acc.forecast(S.system, budget.forecast_id).forecast.owner.should eq("PERSO")
+  end
+
+  it "signale une prévision ancienne modifiée dans la Comptabilité avant sa reprise (budget.forecast.broken)" do
+    S.setup
+    budget = Api.create_budget(S.parent, 2026).value!
+    summary = Acc.forecast(S.system, budget.forecast_id).forecast
+    Acc.update_forecast(S.system, budget.forecast_id, Acc::ForecastInput.new(summary.name, summary.start_period_id,
+      summary.end_period_id, owner: ""), owner: "PERSO").value!
+    Acc.forecast(S.system, budget.forecast_id).categories.each { |group| Acc.delete_forecast_category(S.system, group.id).value! }
+    Api.set_budget_line(S.parent, 2026, Api::BudgetLineInput.new(S.category("Alimentation").id, S.d("400"))).error_keys
+      .should eq(["perso.errors.budget.forecast.broken"])
+  end
 end

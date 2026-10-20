@@ -215,7 +215,8 @@ module Perso
 
     # Règle de catégorisation (D6), tenue par `partiduo-bankimport` : le
     # libellé contient, le montant vaut, sens, compte du foyer (ou tous),
-    # alors telle catégorie.
+    # alors telle catégorie et tel bénéficiaire (`payee`, facultatif,
+    # A-PER-2 ; vide : celui du relevé).
     record RuleInput,
       category_id : Int64,
       label_contains : String = "",
@@ -223,7 +224,8 @@ module Perso
       direction : String = "any",
       account_id : Int64? = nil,
       position : Int32 = 100,
-      active : Bool = true
+      active : Bool = true,
+      payee : String = ""
 
     # Déplacements professionnels d'une année (frais réels, D10).
     record TripInput, year : Int32, fiscal_power : Int32, kilometers : Int32, member_id : Int64? = nil,
@@ -656,7 +658,8 @@ module Perso
       position : Int32,
       active : Bool,
       learned : Bool,
-      hits : Int32 do
+      hits : Int32,
+      payee : String = "" do
       def direction_key : String
         "bankimport.directions.#{direction}"
       end

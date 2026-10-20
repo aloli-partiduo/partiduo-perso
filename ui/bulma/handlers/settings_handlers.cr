@@ -126,7 +126,7 @@ module Perso
     # (D6), tenues par `partiduo-bankimport` : « le libellé contient… »,
     # « le montant vaut… », alors telle catégorie.
     class RulesHandler < Handler
-      FIELDS = %w[label_contains amount direction category_id account_id position active]
+      FIELDS = %w[label_contains amount direction category_id payee account_id position active]
 
       def get
         render_list(rule_form({"direction" => "any", "position" => "100", "active" => "1"}))
@@ -154,6 +154,8 @@ module Perso
             options: code_options(Api::RULE_DIRECTIONS, "bankimport.directions")),
           Form::Field.new("category_id", I18n.t("perso_ui.operations.category"), "select", value.call("category_id"),
             options: category_options, required: true),
+          Form::Field.new("payee", I18n.t("perso_ui.operations.payee"), value: value.call("payee"), maxlength: 120,
+            help: I18n.t("perso_ui.rules.payee_help")),
           Form::Field.new("account_id", I18n.t("perso_ui.operations.account"), "select", value.call("account_id"),
             options: [option("", I18n.t("perso_ui.operations.all_accounts"))] + account_options(writable_only: false)),
           Form::Field.new("position", I18n.t("perso_ui.accounts.position"), "number", value.call("position"), mono: true),
@@ -169,7 +171,7 @@ module Perso
         return if form.invalid || category.nil?
         Api::RuleInput.new(category_id: category, label_contains: field("label_contains"), amount: amount,
           direction: field("direction").presence || "any", account_id: id_field("account_id"), position: position,
-          active: checkbox("active"))
+          active: checkbox("active"), payee: field("payee"))
       end
 
       private def render_list(form : Form, status : Int32 = 200) : Marten::HTTP::Response
@@ -180,7 +182,7 @@ module Perso
           ]
           Table::Row.new([
             Table::Cell.new(rule.label_contains), Table::Cell.new(rule.amount.try { |amount| fmt.amount(amount) } || ""),
-            Table::Cell.new(I18n.t(rule.direction_key)), Table::Cell.new(rule.category_label),
+            Table::Cell.new(I18n.t(rule.direction_key)), Table::Cell.new(rule.category_label), Table::Cell.new(rule.payee),
             Table::Cell.new(rule.learned ? I18n.t("perso_ui.rules.learned") : I18n.t("perso_ui.rules.typed")),
             Table::Cell.new(rule.hits.to_s), Table::Cell.new("", actions: actions),
           ])
@@ -190,6 +192,7 @@ module Perso
           Table::Column.new("amount", I18n.t("perso_ui.rules.amount"), "number"),
           Table::Column.new("direction", I18n.t("perso_ui.rules.direction"), secondary: true),
           Table::Column.new("category", I18n.t("perso_ui.operations.category")),
+          Table::Column.new("payee", I18n.t("perso_ui.operations.payee"), secondary: true),
           Table::Column.new("origin", I18n.t("perso_ui.rules.origin"), secondary: true),
           Table::Column.new("hits", I18n.t("perso_ui.rules.hits"), "number", secondary: true),
           Table::Column.new("actions", I18n.t("perso_ui.documents.actions"), "actions", sortable: false),
@@ -205,7 +208,7 @@ module Perso
         rule = Api.rules(actor).find(&.id.==(id_param)) || raise Partiduo::Api::NotFound.new("perso_rule", id_param)
         show(rule_form({"label_contains" => rule.label_contains, "amount" => rule.amount.try { |amount| fmt.input_number(amount) } || "",
                         "direction" => rule.direction, "category_id" => rule.category_id.to_s, "account_id" => rule.account_id.to_s,
-                        "position" => rule.position.to_s, "active" => rule.active ? "1" : ""}))
+                        "position" => rule.position.to_s, "active" => rule.active ? "1" : "", "payee" => rule.payee}))
       end
 
       def post

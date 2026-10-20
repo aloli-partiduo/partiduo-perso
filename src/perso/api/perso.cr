@@ -253,7 +253,7 @@ module Perso
         found = categories[rule.account]? || next
         RuleView.new(id: rule.id, category_id: found[0], category_label: found[1], label_contains: rule.label_contains,
           amount: rule.amount, direction: rule.direction, account_id: rule.ledger_id.try { |ledger| accounts[ledger]? },
-          position: rule.position, active: rule.active, learned: rule.learned, hits: rule.hits)
+          position: rule.position, active: rule.active, learned: rule.learned, hits: rule.hits, payee: rule.payee)
       end
     end
 
@@ -264,7 +264,7 @@ module Perso
       ledger_id = input.account_id.try { |account_id| Records.account!(actor, account_id)[0].ledger_id!.to_i64 }
       rule = Bankimport::Api::RuleInput.new(label_contains: input.label_contains, amount: input.amount,
         direction: input.direction, account: category.account.to_s, ledger_id: ledger_id, position: input.position,
-        active: input.active)
+        active: input.active, payee: input.payee)
       result = id ? Bankimport::Api.update_rule(actor, id, rule) : Bankimport::Api.create_rule(actor, rule)
       return Result(RuleView).failure(result.errors.map { |error| FieldError.new(error.field == "account" ? "category_id" : error.field, error.key, error.params) }) if result.failure?
       view = rules(actor).find(&.id.==(result.value!.id)) || raise Partiduo::Api::NotFound.new("perso_rule", result.value!.id)

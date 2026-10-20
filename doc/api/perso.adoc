@@ -78,7 +78,14 @@ Dans un dossier d'entreprise, toute méthode lève
   `account.blank|invalid|read_only|closed`, et celles de la Comptabilité
   (période, journal).
 * `update_operation(actor, entry_id, OperationInput)` — extourne puis
-  nouvelle écriture ; `delete_operation(actor, entry_id)` — extourne.
+  nouvelle écriture ; la ligne de relevé d'une écriture transférée est
+  rattachée à la nouvelle écriture du même compte
+  (`Bankimport::Api.relink`, D-PER-022), ou écartée si le rattachement est
+  refusé (montant, date ou compte changés) ; `delete_operation(actor,
+  entry_id)` — extourne, ligne de relevé écartée.
+* `OperationView#payee` : bénéficiaire saisi, sinon celui de la ligne de
+  relevé transférée (`Bankimport::Api.lines_by_entry`, D-PER-023), sinon le
+  libellé de l'écriture.
 * `attach_document(actor, DocumentInput)`, `document_content`,
   `delete_document`, `documents` — une cible : écriture, compte ou année
   (`document.target.one`).
@@ -104,10 +111,16 @@ Dans un dossier d'entreprise, toute méthode lève
 == Budgets (D8, D-PER-012)
 
 * `create_budget(actor, year)`, `budget(actor, year) : BudgetView?`,
-  `budget_years` — `budget.year.taken|missing`.
+  `budget_years` — `budget.year.taken|missing`. La prévision est tenue par
+  l'extension (`owner: "PERSO"`, D-PER-020) : l'écran « Prévisions » de la
+  Comptabilité la lit sans pouvoir la modifier. Un budget créé avant la
+  0.1.5 est repris (sa prévision devient tenue) à sa consultation par qui
+  peut l'écrire, ou à sa prochaine écriture.
 * `set_budget_line(actor, year, BudgetLineInput)`, `delete_budget_line` —
   `budget.amount.invalid`, `budget.period_kind.invalid`,
-  `budget.category.taken|overlap`, `budget.forecast.broken`.
+  `budget.category.taken|overlap`, `budget.forecast.broken` (prévision
+  d'un ancien budget supprimée ou modifiée dans la Comptabilité avant sa
+  reprise, ou tenue par une autre pièce).
 * `propose_budget(actor, year)`.
 
 == Patrimoine (D9, D-PER-014)
@@ -132,7 +145,9 @@ Dans un dossier d'entreprise, toute méthode lève
   `delete_member`, `set_member_accounts(actor, id, account_ids)` —
   `member.*`.
 * `rules`, `save_rule(actor, RuleInput, id = nil)`, `delete_rule` — règles
-  de `partiduo-bankimport` vers le compte d'une catégorie.
+  de `partiduo-bankimport` vers le compte d'une catégorie ; `payee`
+  (`RuleInput`, `RuleView`, derniers champs) : bénéficiaire posé sur les
+  lignes (`bankimport.errors.payee.too_long`).
 
 == Tableau de bord
 

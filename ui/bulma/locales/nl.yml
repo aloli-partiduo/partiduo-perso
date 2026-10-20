@@ -325,6 +325,7 @@ nl:
       learned: "Geleerd"
       typed: "Ingevoerd"
       hits: "Voorstellen"
+      payee_help: "Optioneel: begunstigde voor de lijnen, in plaats van die uit het afschrift."
     members:
       intro: "De gezinsleden zijn gebruikers van het dossier. Een minderjarige ziet alleen zijn rekeningen; een adviseur leest zonder iets te wijzigen."
       new: "Nieuw lid"

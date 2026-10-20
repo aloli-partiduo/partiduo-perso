@@ -325,6 +325,7 @@ en:
       learned: "Learned"
       typed: "Entered"
       hits: "Proposals"
+      payee_help: "Optional: payee given to the lines, instead of the one read from the statement."
     members:
       intro: "Household members are users of the file. A minor only sees their accounts; an advisor reads without changing anything."
       new: "New member"

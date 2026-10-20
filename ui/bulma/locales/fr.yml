@@ -325,6 +325,7 @@ fr:
       learned: "Apprise"
       typed: "Saisie"
       hits: "Propositions"
+      payee_help: "Facultatif : bénéficiaire donné aux lignes, à la place de celui du relevé."
     members:
       intro: "Les membres du foyer sont des utilisateurs du dossier. Un mineur ne voit que ses comptes ; un conseiller lit sans rien modifier."
       new: "Nouveau membre"

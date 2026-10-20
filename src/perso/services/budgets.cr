@@ -5,7 +5,10 @@ module Perso
   # par année civile (`create_forecast`), deux catégories de prévision
   # (dépenses, recettes), un élément par catégorie budgétée dont la formule
   # du réel porte sur le compte de la catégorie et ses sous-comptes ;
-  # réalisé, écart et reste lus dans `forecast_report`. Interne.
+  # réalisé, écart et reste lus dans `forecast_report`. La prévision est
+  # *tenue* par l'extension (`owner: "PERSO"`, A-PER-4, D-PER-020) :
+  # l'écran « Prévisions » de la Comptabilité ne peut plus la modifier ni la
+  # supprimer ; chaque écriture de l'extension s'y nomme. Interne.
   module Budgets
     alias Acc = Partiduo::Api::Accounting
     alias FieldError = Partiduo::Api::FieldError
@@ -13,6 +16,9 @@ module Perso
 
     # Rang des deux catégories de la prévision.
     GROUPS = {"expense" => 1, "income" => 2}
+
+    # Propriétaire des prévisions des budgets (code du registre).
+    OWNER = Perso::CODE
 
     # Formule du réel d'une catégorie : solde débiteur des comptes d'une
     # dépense, créditeur d'une recette.
@@ -31,15 +37,40 @@ module Perso
       periods = Years.periods(year)
       return {nil, [Records.error("year", "budget.year.missing", {"year" => year.to_s})]} if periods.nil?
       forecast = Acc.create_forecast(actor, Acc::ForecastInput.new(name: I18n.t("perso.labels.budget", year: year.to_s),
-        start_period_id: periods.first.id, end_period_id: periods.last.id))
+        start_period_id: periods.first.id, end_period_id: periods.last.id, owner: OWNER))
       return {nil, forecast.errors} if forecast.failure?
       forecast_id = forecast.value!.id
       GROUPS.each do |kind, position|
         result = Acc.create_forecast_category(actor, forecast_id,
-          Acc::ForecastCategoryInput.new(I18n.t("perso.category_kinds.#{kind}"), position))
+          Acc::ForecastCategoryInput.new(I18n.t("perso.category_kinds.#{kind}"), position), owner: OWNER)
         return {nil, result.errors} if result.failure?
       end
       {Budget.create!(year: year, forecast_id: forecast_id), [] of FieldError}
+    end
+
+    # Reprise d'un budget créé avant la prévision tenue (D-PER-020) : sa
+    # prévision, sans propriétaire, devient tenue par l'extension, par le
+    # contrat (`update_forecast` avec `owner`, permis tant qu'aucune pièce ne
+    # la tient). Rend les erreurs : une prévision supprimée, ou tenue par une
+    # autre pièce, est signalée comme modifiée hors de l'extension
+    # (`budget.forecast.broken`).
+    def self.claim(actor : Actor, budget : Budget) : Array(FieldError)
+      view = Acc.forecast(actor, budget.forecast_id!.to_i64).forecast
+      return [] of FieldError if view.owner == OWNER
+      return [Records.error("year", "budget.forecast.broken")] unless view.owner.empty?
+      result = Acc.update_forecast(actor, view.id, Acc::ForecastInput.new(name: view.name,
+        start_period_id: view.start_period_id, end_period_id: view.end_period_id, owner: OWNER), owner: OWNER)
+      result.failure? ? result.errors : [] of FieldError
+    rescue Partiduo::Api::NotFound
+      [Records.error("year", "budget.forecast.broken")]
+    end
+
+    # Le budget est-il encore tenu ailleurs que par l'extension (reprise à
+    # faire) ?
+    def self.unclaimed?(actor : Actor, budget : Budget) : Bool
+      Acc.forecast(actor, budget.forecast_id!.to_i64).forecast.owner != OWNER
+    rescue Partiduo::Api::NotFound
+      false
     end
 
     # Catégorie de la prévision qui reçoit les éléments d'un sens.
@@ -81,6 +112,8 @@ module Perso
 
     # Ajoute ou remplace le montant budgété d'une catégorie.
     def self.set_line(actor : Actor, budget : Budget, input : Api::BudgetLineInput) : {BudgetLine?, Array(FieldError)}
+      claimed = claim(actor, budget)
+      return {nil, claimed} unless claimed.empty?
       current = BudgetLine.filter(budget_id: budget.id, category_id: input.category_id).first
       errors = line_errors(budget, input, current)
       return {nil, errors} unless errors.empty?
@@ -91,7 +124,7 @@ module Perso
         amount: input.period_kind == "monthly" ? input.amount : BigDecimal.new(0), position: category.position!.to_i32,
         period_amounts: input.period_kind == "monthly" ? [] of Acc::ForecastPeriodAmountInput : periods.map_with_index { |period, index| Acc::ForecastPeriodAmountInput.new(period.id, amounts[index]) })
       if current
-        result = Acc.update_forecast_item(actor, current.forecast_item_id!.to_i64, item)
+        result = Acc.update_forecast_item(actor, current.forecast_item_id!.to_i64, item, owner: OWNER)
         return {nil, result.errors} if result.failure?
         current.amount = Records.cents(input.amount)
         current.period_kind = input.period_kind
@@ -99,7 +132,7 @@ module Perso
         return {current, [] of FieldError}
       end
       group = group_id(actor, budget, category.kind.to_s) || return {nil, [Records.error("year", "budget.forecast.broken")]}
-      result = Acc.create_forecast_item(actor, group, item)
+      result = Acc.create_forecast_item(actor, group, item, owner: OWNER)
       return {nil, result.errors} if result.failure?
       row = BudgetLine.create!(budget_id: budget.id, category_id: category.id, period_kind: input.period_kind,
         amount: Records.cents(input.amount), forecast_item_id: result.value!.id)
@@ -107,7 +140,9 @@ module Perso
     end
 
     def self.delete_line(actor : Actor, row : BudgetLine) : Array(FieldError)
-      result = Acc.delete_forecast_item(actor, row.forecast_item_id!.to_i64)
+      claimed = claim(actor, Budget.get!(id: row.budget_id))
+      return claimed unless claimed.empty?
+      result = Acc.delete_forecast_item(actor, row.forecast_item_id!.to_i64, owner: OWNER)
       return result.errors if result.failure?
       row.delete
       [] of FieldError
@@ -144,14 +179,15 @@ module Perso
         months: report.periods.map(&.starts_on), lines: lines, as_of: today)
     end
 
-    # Réalisé d'une catégorie sur une année, lu dans la Comptabilité.
+    # Réalisé d'une catégorie sur une année, compte et sous-comptes : écart
+    # des soldes de fin d'année et de fin de l'année précédente
+    # (`account_balance` avec `prefix`, A-PER-1, D-PER-021), deux sommes SQL
+    # au lieu de la lecture des lignes de chaque compte.
     def self.actual(category : Category, year : Int32) : BigDecimal
-      total = BigDecimal.new(0)
-      Acc.chart(Records.system, category.account.to_s).each do |line|
-        statement = Acc.account_statement(Records.system, Acc::StatementQuery.new(account: line.account.number,
-          date_from: Calendar.year_start(year), date_to: Calendar.year_end(year)))
-        total += statement.total_debit - statement.total_credit
-      end
+      number = category.account.to_s
+      ending = Acc.account_balance(Records.system, number, Calendar.year_end(year), prefix: true)
+      opening = Acc.account_balance(Records.system, number, Calendar.year_start(year) - 1.day, prefix: true)
+      total = ending - opening
       category.kind == "income" ? -total : total
     rescue Partiduo::Api::NotFound
       BigDecimal.new(0)
@@ -162,6 +198,8 @@ module Perso
     # ce réalisé. Les catégories déjà budgétées sont gardées. Rend le nombre
     # de montants proposés.
     def self.propose(actor : Actor, budget : Budget) : {Int32, Array(FieldError)}
+      claimed = claim(actor, budget)
+      return {0, claimed} unless claimed.empty?
       year = budget.year!.to_i32 - 1
       taken = BudgetLine.filter(budget_id: budget.id).to_a.map(&.category_id!.to_i64).to_set
       parents = Category.all.to_a.compact_map(&.parent_id.try(&.to_i64)).to_set

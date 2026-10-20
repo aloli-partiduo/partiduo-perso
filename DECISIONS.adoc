@@ -311,6 +311,93 @@ demande.
 `shard.override.yml` local, non versionné, pour les copies de travail
 voisines.
 
+=== D-PER-020 — Budget : prévision tenue par l'extension (A-PER-4, 20 octobre 2026)
+
+*Contexte.* Contournement de D-PER-012 : la prévision « Budget AAAA » se
+modifiait ou se supprimait depuis l'écran « Prévisions » de la
+Comptabilité ; l'extension ne pouvait que le constater
+(`budget.forecast.broken`). Le cœur livre la prévision tenue (D-AMD-022,
+`ForecastInput#owner`, `owner:` des commandes d'écriture).
+
+*Choix.* Le budget d'une année est créé avec `owner: "PERSO"` ; chaque
+écriture de l'extension sur sa prévision, ses catégories et ses éléments
+se nomme (`owner: "PERSO"`). L'écran commun la lit, ne la modifie plus
+(`accounting.errors.forecast.owned`) ; sa copie reste libre (brouillon).
+
+*Reprise des budgets existants.* Le contrat le permet : `update_forecast`
+avec `ForecastInput#owner` pose le propriétaire d'une prévision qu'aucune
+pièce ne tient. Un budget créé avant la 0.1.5 est repris *par le contrat*,
+avec l'acteur réel (droit `accounting.report.write`) : à sa consultation
+par qui peut écrire les budgets (`perso.budget`), sinon à sa prochaine
+écriture (montant, retrait, proposition). Pas de migration Marten : elle
+écrirait dans une table du cœur (`accounting_forecast`) hors du contrat, et
+sans acteur.
+
+*Surveillance gardée, rétrécie.* `budget.forecast.broken` ne vise plus que
+la prévision d'un ancien budget déjà modifiée ou supprimée dans la
+Comptabilité avant sa reprise (catégorie de prévision disparue, prévision
+absente, ou tenue par une autre pièce) : une prévision tenue ne peut plus
+être cassée par l'écran commun.
+
+*Compatibilité.* Aucune donnée de l'extension ne change ; la colonne
+`owner` de la prévision passe de `''` à `PERSO` à la reprise.
+
+=== D-PER-021 — Soldes par `account_balance` (A-PER-1, 20 octobre 2026)
+
+*Contexte.* Contournement de D-PER-006 : le solde d'un compte du foyer, le
+patrimoine, ses douze derniers mois, les soldes prévisionnels et le réalisé
+d'une catégorie lisaient `account_statement`, qui charge toutes les lignes
+du compte. Le cœur livre `Accounting.account_balance(actor, number, as_of,
+prefix)` (D-AMD-015), une somme SQL sur les mêmes lignes.
+
+*Choix.* `Accounts.balance` lit `account_balance` à la date demandée (sans
+date : toutes les écritures, futures comprises, comme le solde du relevé
+qu'il remplace) ; le réalisé annuel d'une catégorie est l'écart de deux
+soldes avec `prefix` (fin de l'année, fin de l'année précédente), compte et
+sous-comptes en une requête chacun. Montants identiques (vérifié par les
+specs existantes).
+
+*Compatibilité.* Aucune donnée touchée.
+
+=== D-PER-022 — Opération importée corrigée : ligne rattachée (A-PER-3, 20 octobre 2026)
+
+*Contexte.* Contournement de D-PER-008 : corriger une écriture transférée
+d'un relevé l'extourne, l'abonné de l'import rendait sa ligne à traiter,
+et l'extension l'écartait. `partiduo-bankimport` 0.1.4 livre
+`Bankimport::Api.relink` (D-BKI-015).
+
+*Choix.* Après la correction, la ligne de chaque écriture extournée est
+rattachée à la nouvelle écriture du même journal : elle reste transférée,
+son relevé pointé est refait. Si le rattachement est refusé — montant ou
+date changés au-delà de ce que le relevé admet, compte changé, droits
+`bankimport.import` ou `accounting.matching.write` absents — la ligne est
+écartée comme avant. Une suppression écarte toujours la ligne : le relevé
+garde le mouvement, mais le foyer a choisi de ne pas le compter.
+
+*Compatibilité.* Les lignes déjà écartées par une correction antérieure le
+restent ; elles se reprennent et se rattachent à la main dans l'écran
+« Lignes à traiter » de l'import (« Rattacher »).
+
+=== D-PER-023 — Bénéficiaire des règles et des lignes importées (A-PER-2, 20 octobre 2026)
+
+*Contexte.* Contournement de D-PER-017 : le contrat de l'import ne
+connaissait pas le bénéficiaire, le libellé de la ligne en tenait lieu.
+`partiduo-bankimport` 0.1.4 livre `RuleInput#payee`, `LineView#payee` et
+`lines_by_entry` (D-BKI-012).
+
+*Choix.* Une règle du foyer porte un bénéficiaire facultatif
+(`RuleInput#payee`, `RuleView#payee`, écran « Règles de catégorisation du
+foyer »), passé à la règle de l'import. Une écriture transférée d'un relevé
+présente le bénéficiaire de sa ligne (lu dans le relevé ou posé par la
+règle), à défaut le libellé de l'écriture ; une opération saisie garde le
+sien. L'écriture elle-même porte « bénéficiaire · libellé du relevé »
+(choix de l'import).
+
+*Compatibilité.* Les règles existantes n'ont pas de bénéficiaire ; les
+lignes déjà importées ont celui que la migration 0002 de l'import a repris
+(tiers d'un CSV ou d'un QIF, libellé d'un OFX), ce qui ne change pas leur
+présentation.
+
 == Amendements proposés
 
 À soumettre à l'utilisateur ; l'extension les contourne sans modifier
@@ -321,6 +408,8 @@ A-PER-1 — Solde d'un compte à une date, sans ses lignes (cœur, `Partiduo::Ap
   `account_statement`, qui charge toutes les lignes du compte. Proposition :
   `account_balance(actor, number, as_of) : BigDecimal` (une agrégation
   SQL, droits par journal compris). Contournement en place.
+  *Adopté le 13 octobre 2026 (D-AMD-015 du cœur). Réalisé le 20 octobre
+  2026 : D-PER-021.*
 
 A-PER-2 — Bénéficiaire d'une règle et d'une ligne importée (`partiduo-bankimport`)::
   ADR-011 D6 veut des règles « alors telle catégorie et tel bénéficiaire ».
@@ -328,6 +417,8 @@ A-PER-2 — Bénéficiaire d'une règle et d'une ligne importée (`partiduo-bank
   bénéficiaire dans l'écriture transférée (libellé ou champ dédié).
   Contournement : le libellé de la ligne tient lieu de bénéficiaire
   (D-PER-017).
+  *Adopté le 13 octobre 2026. Réalisé le 20 octobre 2026 (D-BKI-012 de
+  `partiduo-bankimport` 0.1.4) : D-PER-023.*
 
 A-PER-3 — Rattacher une ligne importée à l'écriture qui corrige la sienne (`partiduo-bankimport`)::
   Corriger une écriture transférée l'extourne : l'abonné de l'import rend
@@ -335,6 +426,8 @@ A-PER-3 — Rattacher une ligne importée à l'écriture qui corrige la sienne (
   `Bankimport::Api.relink(actor, line_id, entry_id)`, qui garde la ligne
   transférée en la rattachant à la nouvelle écriture (et à son pointage).
   Contournement : la ligne est écartée (D-PER-008).
+  *Adopté le 13 octobre 2026. Réalisé le 20 octobre 2026 (D-BKI-015 de
+  `partiduo-bankimport` 0.1.4) : D-PER-022.*
 
 A-PER-4 — Prévision tenue par une extension (cœur, prévisions)::
   Le budget d'une année est une prévision que l'écran « Prévisions » de la
@@ -342,6 +435,8 @@ A-PER-4 — Prévision tenue par une extension (cœur, prévisions)::
   (`budget.forecast.broken`). Proposition : un propriétaire de la prévision
   (`ForecastInput#owner = "PERSO"`) qui en réserve l'écriture à
   l'extension, lisible par tous.
+  *Adopté le 13 octobre 2026 (D-AMD-022 du cœur). Réalisé le 20 octobre
+  2026 : D-PER-020.*
 
 A-PER-5 — Type de dossier dans la console d'administration (`partiduo-admin`, D-FOY-005)::
   Le choix du type `household` à la création d'un dossier depuis la console

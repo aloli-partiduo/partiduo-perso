@@ -20,7 +20,8 @@ module Perso
       row = Operation.filter(entry_id: entry_id).first || Operation.filter(transfer_entry_id: entry_id).first
       account = context.accounts_by_ledger[entry.ledger_id]? || raise Partiduo::Api::NotFound.new("perso_operation", entry_id)
       writable = Records.ledgers(actor)[entry.ledger_id]?.try(&.access.writable?) || false
-      view = Operations.view(context, entry, row, writable && !account.closed && !entry.cancelled? && !entry.reversal?) ||
+      payee = row ? nil : Operations.bank_payees(actor, [entry])[entry_id]?
+      view = Operations.view(context, entry, row, writable && !account.closed && !entry.cancelled? && !entry.reversal?, payee) ||
              raise Partiduo::Api::NotFound.new("perso_operation", entry_id)
       head = row.try(&.entry_id.try(&.to_i64)) || entry_id
       ids = Operations.versions(head).map(&.entry_id)
@@ -62,6 +63,7 @@ module Perso
         next Result(OperationView).failure(failures) unless failures.empty?
         created, failures = Operations.record(actor, input, entries.first.id)
         next Result(OperationView).failure(failures) if created.nil?
+        Operations.relink_bank_lines(actor, entries, created)
         Operations.retire(row, entries.first, "replaced", reversal, actor)
         Result(OperationView).success(present(actor, created.entry_id!.to_i64))
       end
@@ -75,6 +77,7 @@ module Perso
         row, entries = Operations.active!(actor, entry_id)
         reversal, failures = Operations.reverse(actor, entries, I18n.t("perso.labels.deletion"))
         next Result(Nil).failure(failures) unless failures.empty?
+        Operations.discard_bank_lines(actor, entries)
         Operations.retire(row, entries.first, "deleted", reversal, actor)
         Result(Nil).success(nil)
       end
@@ -83,7 +86,8 @@ module Perso
     private def self.present(actor : Actor, entry_id : Int64) : OperationView
       entry = Acc.entry(actor, entry_id)
       row = Operation.filter(entry_id: entry_id).first
-      Operations.view(Operations::Context.new, entry, row, true) || raise Partiduo::Api::NotFound.new("perso_operation", entry_id)
+      payee = row ? nil : Operations.bank_payees(actor, [entry])[entry_id]?
+      Operations.view(Operations::Context.new, entry, row, true, payee) || raise Partiduo::Api::NotFound.new("perso_operation", entry_id)
     end
 
     # --- Justificatifs (D4) ---------------------------------------------------------------

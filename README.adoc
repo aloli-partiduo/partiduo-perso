@@ -43,7 +43,7 @@ extourne, versions successives avec auteur et date.
 |Comptes du foyer
 |Compte courant, livret (taux, plafond), assurance-vie, PEA, compte-titres,
 emprunt immobilier, autre dette, bien ; titulaires ; solde de la
-Comptabilité ; solde d'ouverture.
+Comptabilité (`account_balance`) ; solde d'ouverture.
 
 |Emprunts
 |Tableau d'amortissement (différé partiel ou total, assurance fixe ou
@@ -52,8 +52,10 @@ version, confirmation des échéances.
 
 |Import et règles
 |Relevés CSV, OFX, QIF de `partiduo-bankimport` ; règles de catégorisation
-du foyer (celles de l'import, vers une catégorie) ; ligne importée
-rapprochée de l'échéance prévue.
+du foyer (celles de l'import, vers une catégorie et un bénéficiaire) ;
+bénéficiaire de la ligne importée présenté sur l'opération ; ligne importée
+rapprochée de l'échéance prévue ; une opération importée corrigée garde sa
+ligne de relevé, rattachée à la nouvelle écriture.
 
 |Échéancier
 |Opérations récurrentes (mensuelle, trimestrielle, annuelle, tous les N
@@ -61,7 +63,8 @@ jours, jour ouvré), échéances à confirmer ou à écarter, retards signalés,
 soldes prévisionnels.
 
 |Budgets
-|Une prévision de la Comptabilité par année ; montant mensuel ou annuel par
+|Une prévision de la Comptabilité par année, tenue par l'extension (l'écran
+« Prévisions » ne la modifie pas) ; montant mensuel ou annuel par
 catégorie ; réalisé, écart, reste, dépassements signalés ; proposition tirée
 de l'année précédente.
 

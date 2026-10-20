@@ -89,7 +89,7 @@ describe "Opérations du foyer (ADR-011 D4, D11)" do
     Api.operations(S.system).should be_empty
   end
 
-  it "présente une écriture transférée d'un relevé importé, et écarte la ligne quand on la corrige" do
+  it "présente une écriture transférée d'un relevé importé, et rattache sa ligne à l'écriture qui la corrige" do
     S.setup
     S.import_line("CB BOULANGERIE DU MARCHE", "-8.40", "62")
     imported = Api.operations(S.system).first
@@ -100,9 +100,39 @@ describe "Opérations du foyer (ADR-011 D4, D11)" do
     corrected = Api.update_operation(S.parent, imported.entry_id, Api::OperationInput.new(account_id: S.current_account.id,
       date: imported.date, amount: S.d("8.40"), category_id: S.category("Loisirs et vacances").id, payee: "Boulangerie")).value!
     corrected.category_label.should eq("Loisirs et vacances")
-    Bankimport::Api.lines(S.system, Bankimport::Api::LineQuery.new(status: "discarded")).size.should eq(1)
+    line = Bankimport::Api.lines(S.system, Bankimport::Api::LineQuery.new(status: nil)).first
+    {line.status, line.entry_id}.should eq({"transferred", corrected.entry_id})
     Bankimport::Api.count_lines(S.system).should eq(0)
     Api.operation(S.system, corrected.entry_id).versions.size.should eq(2)
+    Bankimport::Api.transfer(S.parent, [line.id]).value!.transferred.should be_empty
+  end
+
+  it "écarte la ligne du relevé quand la correction change le montant, ou quand on supprime l'opération" do
+    S.setup
+    S.import_line("CB BOULANGERIE DU MARCHE", "-8.40", "62")
+    imported = Api.operations(S.system).first
+    corrected = Api.update_operation(S.parent, imported.entry_id, Api::OperationInput.new(account_id: S.current_account.id,
+      date: imported.date, amount: S.d("9.40"), category_id: S.category("Alimentation").id, payee: "Boulangerie")).value!
+    Bankimport::Api.lines(S.system, Bankimport::Api::LineQuery.new(status: "discarded")).size.should eq(1)
+
+    S.import_line("CB PRIMEUR", "-5.00", "62", "16/09/2026")
+    primeur = Api.operations(S.system).find! { |view| view.payee == "CB PRIMEUR" }
+    Api.delete_operation(S.parent, primeur.entry_id).value!
+    Bankimport::Api.lines(S.system, Bankimport::Api::LineQuery.new(status: "discarded")).size.should eq(2)
+    Bankimport::Api.count_lines(S.system).should eq(0)
+    corrected.amount.should eq(S.d("-9.40"))
+  end
+
+  it "présente le bénéficiaire que la règle du foyer pose sur la ligne importée (A-PER-2)" do
+    S.setup
+    rule = Api.save_rule(S.parent, Api::RuleInput.new(category_id: S.category("Alimentation").id, label_contains: "boulangerie",
+      payee: "Au bon pain")).value!
+    rule.payee.should eq("Au bon pain")
+    S.import_line("CB BOULANGERIE DU MARCHE 14/09", "-8.40", "62")
+    imported = Api.operations(S.system).first
+    imported.payee.should eq("Au bon pain")
+    Api.operation(S.system, imported.entry_id).operation.payee.should eq("Au bon pain")
+    Acc.entry(S.system, imported.entry_id).label.should eq("Au bon pain · CB BOULANGERIE DU MARCHE 14/09")
   end
 
   it "filtre par compte, catégorie, texte et membre ; un conseiller lit sans écrire" do

@@ -25,6 +25,9 @@ module Perso
 
     MAX_LABEL = 120
 
+    # Date d'arrêt d'un solde demandé sans date : toutes les écritures.
+    FAR_FUTURE = Time.utc(9999, 12, 31)
+
     def self.base(nature : String, asset_kind : String, regime : String = Records.regime) : String?
       bases = BASES[regime]? || BASES["fr"]
       bases[nature == "property" ? asset_kind : nature]?
@@ -32,12 +35,14 @@ module Perso
 
     # --- Solde et valeur --------------------------------------------------------------
 
-    # Solde au jour `as_of` lu dans la Comptabilité (débit − crédit) : positif
-    # pour un avoir ; pour une dette, on rend le capital dû (crédit − débit).
+    # Solde au jour `as_of` lu dans la Comptabilité (débit − crédit), par
+    # `account_balance` (une somme SQL, A-PER-1, D-PER-021) : positif pour un
+    # avoir ; pour une dette, on rend le capital dû (crédit − débit). Sans
+    # date : toutes les écritures, futures comprises, comme le solde du
+    # relevé de compte qu'il remplace.
     def self.balance(row : Account, as_of : Time? = nil) : BigDecimal
-      statement = Acc.account_statement(Records.system, Acc::StatementQuery.new(account: row.account_number.to_s,
-        date_to: as_of))
-      Api::DEBT_NATURES.includes?(row.nature) ? -statement.balance : statement.balance
+      balance = Acc.account_balance(Records.system, row.account_number.to_s, as_of || FAR_FUTURE)
+      Api::DEBT_NATURES.includes?(row.nature) ? -balance : balance
     rescue Partiduo::Api::NotFound
       Records::ZERO
     end

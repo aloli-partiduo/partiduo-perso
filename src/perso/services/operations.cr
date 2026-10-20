@@ -203,10 +203,11 @@ module Perso
       {nil, [entry]}
     end
 
-    # Extourne les écritures d'une opération (à leur date) ; une écriture
-    # transférée d'un relevé importé voit sa ligne écartée dans
-    # `partiduo-bankimport`, pour qu'elle ne revienne pas à traiter
-    # (D-PER-008, amendement proposé A-PER-3). Rend l'extourne de la
+    # Extourne les écritures d'une opération (à leur date). L'abonné de
+    # `partiduo-bankimport` rend alors à traiter la ligne d'un relevé dont
+    # l'écriture est extournée (D-BKI-009) : une suppression l'écarte
+    # (`discard_bank_lines`), une correction la rattache à la nouvelle
+    # écriture (`relink_bank_lines`, D-PER-022). Rend l'extourne de la
     # première écriture.
     def self.reverse(actor : Actor, entries : Array(Acc::EntryView), label : String) : {Int64?, Array(FieldError)}
       first = nil
@@ -214,16 +215,41 @@ module Perso
         result = Acc.cancel_entry(actor, Acc::CancelEntryInput.new(entry_id: entry.id, label: label))
         return {nil, result.errors} if result.failure?
         first ||= result.value!.id
-        discard_bank_line(actor, entry)
       end
       {first, [] of FieldError}
     end
 
-    private def self.discard_bank_line(actor : Actor, entry : Acc::EntryView) : Nil
+    # Ligne de relevé importé d'une écriture transférée (`bankimport:line:<id>`).
+    def self.bank_line_id(entry : Acc::EntryView) : Int64?
       return unless entry.source.starts_with?(BANKIMPORT_SOURCE)
-      line_id = entry.source.lchop(BANKIMPORT_SOURCE).to_i64? || return
+      entry.source.lchop(BANKIMPORT_SOURCE).to_i64?
+    end
+
+    # Opération supprimée : les lignes de relevé de ses écritures sont
+    # écartées, pour qu'un nouveau transfert ne refasse pas l'écriture
+    # (elles restent pour la détection des doublons).
+    def self.discard_bank_lines(actor : Actor, entries : Array(Acc::EntryView)) : Nil
+      ids = entries.compact_map { |entry| bank_line_id(entry) }
+      return if ids.empty? || !actor.can?(Bankimport::Api::IMPORT)
+      Bankimport::Api.discard(actor, ids)
+    rescue Partiduo::Api::AccessDenied | Partiduo::Api::NotFound
+      nil
+    end
+
+    # Opération corrigée (A-PER-3, D-PER-022) : la ligne de relevé de chaque
+    # écriture extournée est rattachée à la nouvelle écriture du même
+    # journal (`Bankimport::Api.relink`) — elle reste transférée, son relevé
+    # pointé est refait. Si le rattachement est refusé (montant ou date
+    # changés, compte changé, droits), la ligne est écartée comme avant.
+    def self.relink_bank_lines(actor : Actor, entries : Array(Acc::EntryView), created : Operation) : Nil
       return unless actor.can?(Bankimport::Api::IMPORT)
-      Bankimport::Api.discard(actor, [line_id])
+      fresh = [created.entry_id, created.transfer_entry_id].compact.map { |id| Acc.entry(Records.system, id.to_i64) }
+      entries.each do |entry|
+        line_id = bank_line_id(entry) || next
+        target = fresh.find(&.ledger_id.==(entry.ledger_id))
+        relinked = target && Bankimport::Api.relink(actor, line_id, target.id).success?
+        Bankimport::Api.discard(actor, [line_id]) unless relinked
+      end
     rescue Partiduo::Api::AccessDenied | Partiduo::Api::NotFound
       nil
     end
@@ -258,7 +284,22 @@ module Perso
       end
     end
 
-    def self.view(context : Context, entry : Acc::EntryView, row : Operation?, writable : Bool) : Api::OperationView?
+    # Bénéficiaires des lignes de relevé transférées vers ces écritures
+    # (`Bankimport::Api.lines_by_entry`, A-PER-2), par écriture ; vide si
+    # l'acteur ne lit pas les relevés.
+    def self.bank_payees(actor : Actor, entries : Array(Acc::EntryView)) : Hash(Int64, String)
+      ids = entries.select(&.source.starts_with?(BANKIMPORT_SOURCE)).map(&.id)
+      return {} of Int64 => String if ids.empty? || !actor.can?(Bankimport::Api::READ)
+      Bankimport::Api.lines_by_entry(actor, ids).transform_values(&.payee).reject { |_, payee| payee.empty? }
+    rescue Partiduo::Api::AccessDenied
+      {} of Int64 => String
+    end
+
+    # Bénéficiaire présenté (D-PER-017) : celui de l'opération saisie, sinon
+    # celui de la ligne de relevé transférée (`bank_payee`), sinon le
+    # libellé de l'écriture.
+    def self.view(context : Context, entry : Acc::EntryView, row : Operation?, writable : Bool,
+                  bank_payee : String? = nil) : Api::OperationView?
       account = context.accounts_by_ledger[entry.ledger_id]? || return
       amount, splits, to_account = parts(context, entry, account, row)
       kind = to_account ? "transfer" : (row.try(&.kind.to_s) || (amount >= 0 ? "income" : "expense"))
@@ -266,7 +307,7 @@ module Perso
       Api::OperationView.new(
         entry_id: entry.id, account_id: account.id!.to_i64, account_label: account.label.to_s, date: entry.date,
         amount: amount, kind: kind, splits: splits, to_account_id: to_account.try(&.id!.to_i64),
-        payee: row.try(&.payee.to_s).presence || entry.label, member_id: member_id,
+        payee: row.try(&.payee.to_s).presence || bank_payee.presence || entry.label, member_id: member_id,
         member_name: member_id.try { |id| context.members[id]? }, note: row.try(&.note.to_s) || "",
         source: source_of(entry), versions: version_count(row), writable: writable)
     end
@@ -337,9 +378,10 @@ module Perso
         entries = fetch(actor, ledger.id, query.date_from, query.date_to)
         rows = Operation.filter(entry_id__in: entries.map(&.id)).to_a.index_by(&.entry_id!.to_i64)
         legs = Operation.filter(transfer_entry_id__in: entries.map(&.id)).to_a.index_by(&.transfer_entry_id!.to_i64)
+        payees = bank_payees(actor, entries)
         entries.each do |entry|
           row = rows[entry.id]? || legs[entry.id]?
-          view = view(context, entry, row, ledger.access.writable? && !account.closed) || next
+          view = view(context, entry, row, ledger.access.writable? && !account.closed, payees[entry.id]?) || next
           next if wanted_categories && view.splits.none? { |split| split.category_id.try { |id| wanted_categories.includes?(id) } }
           next if query.member_id && view.member_id != query.member_id
           next if text && !(view.payee.downcase.includes?(text) || view.category_label.downcase.includes?(text) ||

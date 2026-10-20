@@ -122,6 +122,7 @@ describe "Écrans du foyer sous /ext/PERSO/ (ADR-005, ADR-011 D4)" do
     browser = signed_in
     browser.get("/ext/PERSO/categories").html.should contain("Alimentation")
     browser.get("/ext/PERSO/rules").status.should eq(200)
+    browser.get("/ext/PERSO/rules").html.should contain(%(name="payee"))
     browser.get("/ext/PERSO/members").status.should eq(200)
     browser.get("/ext/PERSO/settings").html.should contain("Barème kilométrique")
     profile = PartiduoUi::Accounts.profile("Lecture du foyer", ["perso.read", "accounting.ledger.read", "accounting.entry.read"])
