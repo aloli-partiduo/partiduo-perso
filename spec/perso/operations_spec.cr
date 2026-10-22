@@ -107,6 +107,24 @@ describe "Opérations du foyer (ADR-011 D4, D11)" do
     Bankimport::Api.transfer(S.parent, [line.id]).value!.transferred.should be_empty
   end
 
+  it "garde le relevé pointé de l'import, complété de l'écriture qui corrige, sans en changer l'identifiant (D-PER-024)" do
+    S.setup
+    S.import_line("CB BOULANGERIE DU MARCHE", "-8.40", "62")
+    line = Bankimport::Api.lines(S.system, Bankimport::Api::LineQuery.new(status: nil)).last
+    pointed = Bankimport::Api.reconcile(S.parent, line.import_id,
+      Bankimport::Api::ReconcileInput.new("RELEVE-09", S.d("100"), S.d("91.60"))).value!
+    statement_id = pointed.statement_id || raise "relevé pointé attendu"
+    imported = Api.operations(S.system).first
+
+    corrected = Api.update_operation(S.parent, imported.entry_id, Api::OperationInput.new(account_id: S.current_account.id,
+      date: imported.date, amount: S.d("8.40"), category_id: S.category("Loisirs et vacances").id, payee: "Boulangerie")).value!
+    Bankimport::Api.import_detail(S.system, line.import_id).statement_id.should eq(statement_id)
+    statement = Acc.bank_statement(S.system, statement_id)
+    statement.lines.map(&.entry_id).should contain(corrected.entry_id)
+    statement.statement.amount.should eq(S.d("-8.40"))
+    Bankimport::Api.lines(S.system, Bankimport::Api::LineQuery.new(status: nil)).last.entry_id.should eq(corrected.entry_id)
+  end
+
   it "écarte la ligne du relevé quand la correction change le montant, ou quand on supprime l'opération" do
     S.setup
     S.import_line("CB BOULANGERIE DU MARCHE", "-8.40", "62")

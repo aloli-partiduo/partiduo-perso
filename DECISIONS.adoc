@@ -378,6 +378,23 @@ garde le mouvement, mais le foyer a choisi de ne pas le compter.
 restent ; elles se reprennent et se rattachent à la main dans l'écran
 « Lignes à traiter » de l'import (« Rattacher »).
 
+=== D-PER-024 — Relevé pointé gardé à la correction d'une opération importée (22 octobre 2026)
+
+*Contexte.* D-PER-022 rattachait la ligne d'une opération importée et
+corrigée à la nouvelle écriture ; `partiduo-bankimport` refaisait alors le
+relevé pointé de l'import, qui changeait d'identifiant (D-BKI-015). Le cœur
+0.18.0 ajoute `Accounting.add_to_statement` (D-AMD-037) et
+`partiduo-bankimport` 0.1.7 s'en sert (D-BKI-016).
+
+*Choix.* Rien ne change dans l'extension : elle appelle toujours
+`Bankimport::Api.relink`. Le relevé pointé garde désormais son
+identifiant, complété de l'extourne et de la nouvelle écriture ; une spec
+le vérifie (relevé pointé, opération corrigée, même relevé, total
+inchangé). Droits inchangés (`bankimport.import`,
+`accounting.matching.write`).
+
+*Compatibilité.* Aucune donnée touchée.
+
 === D-PER-023 — Bénéficiaire des règles et des lignes importées (A-PER-2, 20 octobre 2026)
 
 *Contexte.* Contournement de D-PER-017 : le contrat de l'import ne

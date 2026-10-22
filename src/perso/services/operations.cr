@@ -238,8 +238,9 @@ module Perso
 
     # Opération corrigée (A-PER-3, D-PER-022) : la ligne de relevé de chaque
     # écriture extournée est rattachée à la nouvelle écriture du même
-    # journal (`Bankimport::Api.relink`) — elle reste transférée, son relevé
-    # pointé est refait. Si le rattachement est refusé (montant ou date
+    # journal (`Bankimport::Api.relink`) — elle reste transférée, et son
+    # relevé pointé, complété de l'extourne et de la nouvelle écriture,
+    # garde son identifiant (D-PER-024). Si le rattachement est refusé (montant ou date
     # changés, compte changé, droits), la ligne est écartée comme avant.
     def self.relink_bank_lines(actor : Actor, entries : Array(Acc::EntryView), created : Operation) : Nil
       return unless actor.can?(Bankimport::Api::IMPORT)
