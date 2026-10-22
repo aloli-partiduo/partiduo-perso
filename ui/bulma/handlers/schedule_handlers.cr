@@ -81,7 +81,7 @@ module Perso
 
       def due_on : Time
         fmt.parse_date(query("due_on")) || Time.parse_utc(query("due_on"), "%Y-%m-%d")
-      rescue Time::Format::Error
+      rescue Time::Format::Error | ArgumentError
         raise Partiduo::Api::NotFound.new("perso_due", query("due_on"))
       end
     end
