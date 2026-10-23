@@ -1,0 +1,323 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+it:
+  perso:
+    module:
+      name: "Finanze del nucleo familiare"
+    permissions:
+      read: "Consultare le finanze del nucleo familiare"
+      write: "Inserire e correggere operazioni, confermare scadenze"
+      budget: "Gestire i budget e le valutazioni"
+      admin: "Amministrare il nucleo familiare: conti, categorie, regole, membri, tabelle"
+    menu:
+      perso: "Il mio nucleo familiare"
+      perso_operations: "Operazioni"
+      perso_accounts: "Conti"
+      perso_schedule: "Scadenzario"
+      perso_budgets: "Budget"
+      perso_wealth: "Patrimonio"
+      perso_tax: "Dichiarazione dei redditi"
+      perso_categories: "Categorie del nucleo familiare"
+      perso_rules: "Regole di categorizzazione del nucleo familiare"
+      perso_members: "Membri del nucleo familiare"
+      perso_settings: "Impostazioni del nucleo familiare"
+    natures:
+      current: "Conto corrente"
+      savings: "Libretto di risparmio"
+      life_insurance: "Assicurazione sulla vita"
+      pea: "PEA"
+      securities: "Conto titoli"
+      mortgage: "Mutuo immobiliare"
+      other_debt: "Altro debito"
+      property: "Bene"
+    asset_kinds:
+      residence: "Abitazione principale"
+      real_estate: "Altro immobile"
+      vehicle: "Veicolo"
+      other: "Altro bene"
+    category_kinds:
+      expense: "Uscite"
+      income: "Entrate"
+    tax_tags:
+      donation: "Donazione"
+      home_employment: "Lavoro domestico"
+      home_employment_aid: "Aiuto per il lavoro domestico"
+      professional_expenses: "Spese professionali"
+      rental_income: "Reddito fondiario"
+      rental_charges: "Onere fondiario"
+    member_roles:
+      adult: "Adulto"
+      minor: "Minore"
+      advisor: "Consulente (sola lettura)"
+    operation_kinds:
+      expense: "Uscita"
+      income: "Entrata"
+      transfer: "Bonifico tra conti"
+    operation_statuses:
+      active: "In vigore"
+      replaced: "Corretta"
+      deleted: "Eliminata"
+    sources:
+      perso: "Inserimento"
+      bankimport: "Estratto conto importato"
+      other: "Contabilità"
+    frequencies:
+      monthly: "Mensile"
+      quarterly: "Trimestrale"
+      yearly: "Annuale"
+      days: "Ogni N giorni"
+    due_statuses:
+      upcoming: "In arrivo"
+      overdue: "Scaduta"
+      confirmed: "Confermata"
+      matched: "Riconciliata con un estratto conto"
+      skipped: "Scartata"
+    deferral_kinds:
+      none: "Senza preammortamento"
+      partial: "Preammortamento parziale (solo interessi)"
+      total: "Preammortamento totale (interessi capitalizzati)"
+    insurance_modes:
+      none: "Senza assicurazione"
+      fixed: "Importo fisso per rata"
+      initial: "Tasso annuo sul capitale iniziale"
+      remaining: "Tasso annuo sul capitale residuo"
+    prepayment_modes:
+      duration: "Ridurre la durata"
+      installment: "Ridurre la rata"
+    loan_reasons:
+      initial: "Piano iniziale"
+      prepayment: "Rimborso anticipato parziale"
+      repaid: "Rimborso anticipato totale"
+    period_kinds:
+      monthly: "Mensile"
+      annual: "Annuale"
+    document_kinds:
+      invoice: "Fattura"
+      receipt: "Ricevuta"
+      tax_receipt: "Ricevuta fiscale"
+      certificate: "Attestazione"
+      tax_notice: "Avviso di imposizione"
+      other: "Altro giustificativo"
+    tax_sections:
+      donations: "Donazioni"
+      home_employment: "Impiego di un lavoratore domestico"
+      professional_expenses: "Spese effettive"
+      rental: "Redditi fondiari"
+    tax_boxes:
+      7uf: "donazioni a enti benefici"
+      7ud: "donazioni a enti di aiuto alle persone in difficoltà"
+      7db: "somme versate per l'impiego di un lavoratore domestico"
+      7dr: "aiuti percepiti"
+      1ak: "spese effettive del dichiarante 1"
+      1bk: "spese effettive del dichiarante 2"
+      4be: "micro-foncier, entrate lorde"
+      4ba: "redditi fondiari (2044)"
+    labels:
+      opening: "Saldo di apertura — %{label}"
+      transfer: "Bonifico verso %{label}"
+      installment: "Rata %{number} — %{label}"
+      mileage: "Spese chilometriche — %{label} (%{power} CV, %{km} km)"
+      budget: "Budget %{year}"
+      current_account: "Conto corrente"
+      household: "Nucleo familiare"
+      aids: "Aiuti percepiti"
+      correction: "Correzione"
+      deletion: "Eliminazione"
+      loan: "Mutuo"
+      prepayment: "Rimborso anticipato"
+      total: "Totale"
+    csv:
+      operations: "Data,Conto,Tipo,Beneficiario,Categoria,Importo,Membro,Nota,Registrazione,Origine"
+      accounts: "Conto,Natura,Istituto,Titolari,Saldo,Valore,Ultima valutazione,Chiuso"
+      valuations: "Conto,Data,Importo,Titolo,Quantità,Quotazione,Nota"
+      tax: "Sezione,Caselle,Descrizione,Data,Registrazione,Importo,Giustificativi"
+    pdf:
+      title: "Aiuto alla dichiarazione dei redditi %{year}"
+      subtitle: "Redditi dell'anno %{year}"
+      notice: "Aiuto redatto a partire dalle operazioni inserite: da verificare prima di dichiarare. Nessuna trasmissione telematica."
+      item: "Descrizione"
+      boxes: "Caselle"
+      amount: "Importo"
+    errors:
+      account:
+        blank: "Scelga un conto."
+        invalid: "Questo conto non esiste o non Le è accessibile."
+        read_only: "Può soltanto consultare questo conto."
+        closed: "Questo conto è chiuso."
+        label:
+          blank: "La descrizione è obbligatoria."
+          too_long: "La descrizione non deve superare %{max} caratteri."
+        institution:
+          too_long: "L'istituto non deve superare 120 caratteri."
+        asset_kind:
+          invalid: "Scelga il tipo di bene."
+          not_property: "Solo un bene ha un tipo."
+        rate:
+          invalid: "Il tasso deve essere compreso tra 0 e 100%."
+        ceiling:
+          invalid: "Il massimale deve essere positivo."
+        holder:
+          invalid: "Questo titolare non è un membro del nucleo familiare."
+        nature:
+          invalid: "Natura di conto sconosciuta."
+          unavailable: "Questa natura di conto non esiste in questo paese."
+        ledger:
+          invalid: "Questo giornale non esiste o non Le è accessibile."
+          not_financial: "Solo un giornale finanziario può diventare un conto del nucleo familiare."
+          taken: "Questo giornale è già un conto del nucleo familiare."
+        number:
+          invalid: "Questo conto del piano non esiste."
+          taken: "Questo conto del piano è già associato a un conto del nucleo familiare."
+        bank_category:
+          missing: "La categoria di schede «Banca» non è presente nel dossier."
+        misc_ledger:
+          missing: "Nessun giornale di operazioni varie Le è accessibile per il saldo di apertura."
+      category:
+        label:
+          blank: "La descrizione è obbligatoria."
+          too_long: "La descrizione non deve superare %{max} caratteri."
+        kind:
+          invalid: "Scelga entrate o uscite."
+          locked: "Il senso di una categoria non cambia."
+        tax_tag:
+          invalid: "Etichetta fiscale sconosciuta."
+        parent:
+          invalid: "Questa categoria padre non esiste."
+          depth: "Le categorie hanno solo due livelli."
+          kind: "La categoria padre deve avere lo stesso senso."
+        has_children: "Questa categoria ha delle sottocategorie: le elimini prima."
+        in_use: "Questa categoria è in uso: la ritiri anziché eliminarla."
+      operation:
+        kind:
+          invalid: "Scelga uscita, entrata o bonifico."
+        amount:
+          positive: "L'importo deve essere positivo."
+          cents: "L'importo si scrive al centesimo."
+        payee:
+          too_long: "Il beneficiario non deve superare %{max} caratteri."
+        note:
+          too_long: "La nota non deve superare %{max} caratteri."
+        member:
+          invalid: "Questo membro non esiste."
+        transfer:
+          same_account: "Scelga un altro conto di destinazione."
+        category:
+          blank: "Scelga una categoria."
+          invalid: "Questa categoria non esiste o non è più in uso."
+          kind: "Questa categoria non corrisponde al senso dell'operazione."
+          has_children: "Scelga una sottocategoria."
+        splits:
+          total: "La ripartizione (%{total}) deve corrispondere all'importo dell'operazione (%{amount})."
+        date:
+          out_of_range: "Questa data è al di fuori degli anni gestiti dal nucleo familiare."
+        not_posted: "Non è stato possibile registrare l'operazione."
+      document:
+        target:
+          one: "Un giustificativo si collega a un'operazione, a un conto o a un anno."
+        kind:
+          invalid: "Tipo di giustificativo sconosciuto."
+        label:
+          too_long: "La descrizione non deve superare 255 caratteri."
+        entry:
+          invalid: "Questa operazione non esiste o non Le è accessibile."
+        year:
+          invalid: "Anno non valido."
+      recurring:
+        payee:
+          blank: "Il beneficiario o il pagatore è obbligatorio."
+        frequency:
+          invalid: "Frequenza sconosciuta."
+        interval:
+          invalid: "L'intervallo deve essere da 1 a 366 giorni."
+        last_on:
+          before: "L'ultima data deve seguire la prima."
+        due:
+          unknown: "Questa scadenza non esiste."
+          done: "Questa scadenza è già stata trattata."
+          not_reopenable: "Si può riaprire solo una scadenza scartata o riconciliata."
+      loan:
+        account:
+          not_debt: "Un mutuo si collega a un conto di debito."
+          taken: "Questo conto ha già il suo mutuo."
+        payment:
+          not_cash: "Il mutuo si paga da un conto corrente o da un libretto di risparmio."
+        principal:
+          positive: "Il capitale deve essere positivo."
+        rate:
+          invalid: "Il tasso deve essere compreso tra 0 e 100%."
+        months:
+          invalid: "La durata deve essere da 1 a 600 rate."
+        deferral:
+          invalid: "Tipo di preammortamento sconosciuto."
+          months: "La durata del preammortamento deve essere inferiore a quella del prestito (nulla senza preammortamento)."
+        insurance:
+          invalid: "Modalità di assicurazione sconosciuta."
+          value: "L'importo o il tasso dell'assicurazione non può essere negativo."
+        category:
+          blank: "Scelga la categoria dell'assicurazione."
+          invalid: "Scelga una categoria di uscite."
+        prepayment:
+          mode: "Scelga se ridurre la durata o la rata."
+          positive: "L'importo rimborsato deve essere positivo."
+          before: "Il rimborso deve seguire l'ultima versione del piano."
+          after_end: "Il mutuo è già rimborsato a questa data."
+          too_much: "L'importo supera il capitale residuo (%{remaining})."
+        installment:
+          unknown: "Questa rata non è nel piano."
+          done: "Questa rata è già stata confermata."
+      valuation:
+        account:
+          not_valued: "Si valutano solo gli investimenti e i beni."
+        amount:
+          invalid: "Il valore deve essere positivo o nullo."
+        lines:
+          not_securities: "Solo un PEA o un conto titoli si valutano riga per riga."
+          too_many: "Troppe righe."
+        security:
+          blank: "Il titolo è obbligatorio."
+        quantity:
+          positive: "La quantità deve essere positiva."
+        price:
+          invalid: "La quotazione non può essere negativa."
+        note:
+          too_long: "La nota non deve superare 255 caratteri."
+        date:
+          taken: "Un valore è già inserito a questa data."
+      budget:
+        year:
+          taken: "Il budget %{year} esiste già."
+          missing: "L'anno %{year} non è gestito dal dossier."
+        amount:
+          invalid: "L'importo non può essere negativo."
+        period_kind:
+          invalid: "Scelga mensile o annuale."
+        category:
+          taken: "Questa categoria ha già un budget."
+          overlap: "Una categoria padre o una sottocategoria ha già un budget."
+        forecast:
+          broken: "La previsione di questo budget è stata modificata nella Contabilità."
+      member:
+        name:
+          blank: "Il nome visualizzato è obbligatorio."
+          too_long: "Il nome visualizzato non deve superare 80 caratteri."
+        role:
+          invalid: "Ruolo sconosciuto."
+        user:
+          invalid: "Questo utente non esiste."
+          taken: "Questo utente è già membro del nucleo familiare."
+      mileage:
+        year:
+          invalid: "Anno non valido."
+        power:
+          invalid: "La potenza fiscale deve essere da 1 a 99 CV."
+        coefficient:
+          invalid: "Il coefficiente non può essere negativo."
+        max_km:
+          invalid: "Il limite di distanza deve essere positivo."
+        duplicate: "Ogni fascia compare una sola volta."
+      trip:
+        year:
+          invalid: "Anno non valido."
+        kilometers:
+          invalid: "La distanza deve essere da 1 a 200 000 km."
+        label:
+          too_long: "La descrizione non deve superare 255 caratteri."

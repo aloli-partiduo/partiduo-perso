@@ -98,7 +98,7 @@ src/
     ├── services/              # catégories, comptes, opérations, emprunts, échéancier, budgets, patrimoine, déclaration (interne)
     ├── api/                   # contrat public Perso::Api
     ├── data/                  # barème kilométrique et cases de la déclaration, datés
-    └── locales/               # fr, en, nl
+    └── locales/               # fr, en, nl, de, es, it, pt
 ui/
 └── bulma/                     # interface pour partiduo-ui-bulma (application « perso_ui »)
     ├── bulma.cr               # routes sous /ext/PERSO/, variante « Recettes et dépenses », compteur

@@ -1,0 +1,323 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+pt:
+  perso:
+    module:
+      name: "Finanças do agregado familiar"
+    permissions:
+      read: "Consultar as finanças do agregado familiar"
+      write: "Registar e corrigir operações, confirmar vencimentos"
+      budget: "Gerir os orçamentos e as valorizações"
+      admin: "Administrar o agregado familiar: contas, categorias, regras, membros, tabelas"
+    menu:
+      perso: "O meu agregado familiar"
+      perso_operations: "Operações"
+      perso_accounts: "Contas"
+      perso_schedule: "Calendário de vencimentos"
+      perso_budgets: "Orçamentos"
+      perso_wealth: "Património"
+      perso_tax: "Declaração de rendimentos"
+      perso_categories: "Categorias do agregado familiar"
+      perso_rules: "Regras de categorização do agregado familiar"
+      perso_members: "Membros do agregado familiar"
+      perso_settings: "Definições do agregado familiar"
+    natures:
+      current: "Conta à ordem"
+      savings: "Conta poupança"
+      life_insurance: "Seguro de vida"
+      pea: "PEA"
+      securities: "Conta de títulos"
+      mortgage: "Crédito à habitação"
+      other_debt: "Outra dívida"
+      property: "Bem"
+    asset_kinds:
+      residence: "Habitação própria permanente"
+      real_estate: "Outro imóvel"
+      vehicle: "Veículo"
+      other: "Outro bem"
+    category_kinds:
+      expense: "Despesas"
+      income: "Receitas"
+    tax_tags:
+      donation: "Donativo"
+      home_employment: "Emprego doméstico"
+      home_employment_aid: "Apoio ao emprego doméstico"
+      professional_expenses: "Despesas profissionais"
+      rental_income: "Rendimento predial"
+      rental_charges: "Encargo predial"
+    member_roles:
+      adult: "Adulto"
+      minor: "Menor"
+      advisor: "Consultor (só leitura)"
+    operation_kinds:
+      expense: "Despesa"
+      income: "Receita"
+      transfer: "Transferência entre contas"
+    operation_statuses:
+      active: "Em vigor"
+      replaced: "Corrigida"
+      deleted: "Eliminada"
+    sources:
+      perso: "Registo"
+      bankimport: "Extrato importado"
+      other: "Contabilidade"
+    frequencies:
+      monthly: "Mensal"
+      quarterly: "Trimestral"
+      yearly: "Anual"
+      days: "A cada N dias"
+    due_statuses:
+      upcoming: "Por vencer"
+      overdue: "Vencida"
+      confirmed: "Confirmada"
+      matched: "Reconciliada com um extrato"
+      skipped: "Descartada"
+    deferral_kinds:
+      none: "Sem carência"
+      partial: "Carência parcial (só juros)"
+      total: "Carência total (juros capitalizados)"
+    insurance_modes:
+      none: "Sem seguro"
+      fixed: "Montante fixo por prestação"
+      initial: "Taxa anual sobre o capital inicial"
+      remaining: "Taxa anual sobre o capital em dívida"
+    prepayment_modes:
+      duration: "Reduzir o prazo"
+      installment: "Reduzir a prestação"
+    loan_reasons:
+      initial: "Plano inicial"
+      prepayment: "Amortização antecipada parcial"
+      repaid: "Amortização antecipada total"
+    period_kinds:
+      monthly: "Mensal"
+      annual: "Anual"
+    document_kinds:
+      invoice: "Fatura"
+      receipt: "Recibo"
+      tax_receipt: "Recibo fiscal"
+      certificate: "Declaração"
+      tax_notice: "Nota de liquidação"
+      other: "Outro comprovativo"
+    tax_sections:
+      donations: "Donativos"
+      home_employment: "Emprego de um trabalhador doméstico"
+      professional_expenses: "Despesas reais"
+      rental: "Rendimentos prediais"
+    tax_boxes:
+      7uf: "donativos a obras de beneficência"
+      7ud: "donativos a organismos de ajuda a pessoas em dificuldade"
+      7db: "montantes pagos pelo emprego de um trabalhador doméstico"
+      7dr: "apoios recebidos"
+      1ak: "despesas reais do declarante 1"
+      1bk: "despesas reais do declarante 2"
+      4be: "micro-foncier, receitas brutas"
+      4ba: "rendimentos prediais (2044)"
+    labels:
+      opening: "Saldo de abertura — %{label}"
+      transfer: "Transferência para %{label}"
+      installment: "Prestação %{number} — %{label}"
+      mileage: "Despesas de quilometragem — %{label} (%{power} CV, %{km} km)"
+      budget: "Orçamento %{year}"
+      current_account: "Conta à ordem"
+      household: "Agregado familiar"
+      aids: "Apoios recebidos"
+      correction: "Correção"
+      deletion: "Eliminação"
+      loan: "Empréstimo"
+      prepayment: "Amortização antecipada"
+      total: "Total"
+    csv:
+      operations: "Data,Conta,Tipo,Beneficiário,Categoria,Montante,Membro,Nota,Lançamento,Origem"
+      accounts: "Conta,Natureza,Instituição,Titulares,Saldo,Valor,Última valorização,Encerrada"
+      valuations: "Conta,Data,Montante,Título,Quantidade,Cotação,Nota"
+      tax: "Rubrica,Campos,Descrição,Data,Lançamento,Montante,Comprovativos"
+    pdf:
+      title: "Apoio à declaração de rendimentos %{year}"
+      subtitle: "Rendimentos do ano %{year}"
+      notice: "Apoio elaborado a partir das operações registadas: a verificar antes de declarar. Sem submissão eletrónica."
+      item: "Descrição"
+      boxes: "Campos"
+      amount: "Montante"
+    errors:
+      account:
+        blank: "Escolha uma conta."
+        invalid: "Esta conta não existe ou não está acessível."
+        read_only: "Esta conta só pode ser consultada."
+        closed: "Esta conta está encerrada."
+        label:
+          blank: "A descrição é obrigatória."
+          too_long: "A descrição não pode exceder %{max} caracteres."
+        institution:
+          too_long: "A instituição não pode exceder 120 caracteres."
+        asset_kind:
+          invalid: "Escolha o tipo de bem."
+          not_property: "Só um bem tem tipo."
+        rate:
+          invalid: "A taxa deve estar compreendida entre 0 e 100%."
+        ceiling:
+          invalid: "O limite máximo deve ser positivo."
+        holder:
+          invalid: "Este titular não é membro do agregado familiar."
+        nature:
+          invalid: "Natureza de conta desconhecida."
+          unavailable: "Esta natureza de conta não existe neste país."
+        ledger:
+          invalid: "Este diário não existe ou não está acessível."
+          not_financial: "Só um diário financeiro pode tornar-se uma conta do agregado familiar."
+          taken: "Este diário já é uma conta do agregado familiar."
+        number:
+          invalid: "Esta conta do plano não existe."
+          taken: "Esta conta do plano já está associada a uma conta do agregado familiar."
+        bank_category:
+          missing: "A categoria de fichas «Banco» não existe no dossier."
+        misc_ledger:
+          missing: "Nenhum diário de operações diversas está acessível para o saldo de abertura."
+      category:
+        label:
+          blank: "A descrição é obrigatória."
+          too_long: "A descrição não pode exceder %{max} caracteres."
+        kind:
+          invalid: "Escolha receitas ou despesas."
+          locked: "O sentido de uma categoria não muda."
+        tax_tag:
+          invalid: "Etiqueta fiscal desconhecida."
+        parent:
+          invalid: "Esta categoria principal não existe."
+          depth: "As categorias só têm dois níveis."
+          kind: "A categoria principal deve ter o mesmo sentido."
+        has_children: "Esta categoria tem subcategorias: elimine-as primeiro."
+        in_use: "Esta categoria está em uso: retire-a em vez de a eliminar."
+      operation:
+        kind:
+          invalid: "Escolha despesa, receita ou transferência."
+        amount:
+          positive: "O montante deve ser positivo."
+          cents: "O montante escreve-se ao cêntimo."
+        payee:
+          too_long: "O beneficiário não pode exceder %{max} caracteres."
+        note:
+          too_long: "A nota não pode exceder %{max} caracteres."
+        member:
+          invalid: "Este membro não existe."
+        transfer:
+          same_account: "Escolha outra conta de destino."
+        category:
+          blank: "Escolha uma categoria."
+          invalid: "Esta categoria não existe ou já não está em uso."
+          kind: "Esta categoria não corresponde ao sentido da operação."
+          has_children: "Escolha uma subcategoria."
+        splits:
+          total: "A repartição (%{total}) deve perfazer o montante da operação (%{amount})."
+        date:
+          out_of_range: "Esta data está fora dos anos geridos pelo agregado familiar."
+        not_posted: "Não foi possível lançar a operação."
+      document:
+        target:
+          one: "Um comprovativo associa-se a uma operação, a uma conta ou a um ano."
+        kind:
+          invalid: "Tipo de comprovativo desconhecido."
+        label:
+          too_long: "A descrição não pode exceder 255 caracteres."
+        entry:
+          invalid: "Esta operação não existe ou não está acessível."
+        year:
+          invalid: "Ano inválido."
+      recurring:
+        payee:
+          blank: "O beneficiário ou o pagador é obrigatório."
+        frequency:
+          invalid: "Frequência desconhecida."
+        interval:
+          invalid: "O intervalo deve ser de 1 a 366 dias."
+        last_on:
+          before: "A última data deve ser posterior à primeira."
+        due:
+          unknown: "Este vencimento não existe."
+          done: "Este vencimento já foi tratado."
+          not_reopenable: "Só um vencimento descartado ou reconciliado pode ser reaberto."
+      loan:
+        account:
+          not_debt: "Um empréstimo associa-se a uma conta de dívida."
+          taken: "Esta conta já tem o seu empréstimo."
+        payment:
+          not_cash: "O empréstimo paga-se a partir de uma conta à ordem ou de uma conta poupança."
+        principal:
+          positive: "O capital deve ser positivo."
+        rate:
+          invalid: "A taxa deve estar compreendida entre 0 e 100%."
+        months:
+          invalid: "O prazo deve ser de 1 a 600 prestações."
+        deferral:
+          invalid: "Tipo de carência desconhecido."
+          months: "O prazo de carência deve ser inferior ao do empréstimo (nulo sem carência)."
+        insurance:
+          invalid: "Modalidade de seguro desconhecida."
+          value: "O montante ou a taxa do seguro não pode ser negativo."
+        category:
+          blank: "Escolha a categoria do seguro."
+          invalid: "Escolha uma categoria de despesas."
+        prepayment:
+          mode: "Escolha reduzir o prazo ou a prestação."
+          positive: "O montante reembolsado deve ser positivo."
+          before: "O reembolso deve ser posterior à última versão do plano."
+          after_end: "O empréstimo já está reembolsado nesta data."
+          too_much: "O montante excede o capital em dívida (%{remaining})."
+        installment:
+          unknown: "Esta prestação não consta do plano."
+          done: "Esta prestação já foi confirmada."
+      valuation:
+        account:
+          not_valued: "Só as aplicações e os bens são valorizados."
+        amount:
+          invalid: "O valor deve ser positivo ou nulo."
+        lines:
+          not_securities: "Só um PEA ou uma conta de títulos se valorizam linha a linha."
+          too_many: "Demasiadas linhas."
+        security:
+          blank: "O título é obrigatório."
+        quantity:
+          positive: "A quantidade deve ser positiva."
+        price:
+          invalid: "A cotação não pode ser negativa."
+        note:
+          too_long: "A nota não pode exceder 255 caracteres."
+        date:
+          taken: "Já existe um valor registado nesta data."
+      budget:
+        year:
+          taken: "O orçamento %{year} já existe."
+          missing: "O ano %{year} não é gerido pelo dossier."
+        amount:
+          invalid: "O montante não pode ser negativo."
+        period_kind:
+          invalid: "Escolha mensal ou anual."
+        category:
+          taken: "Esta categoria já tem orçamento."
+          overlap: "Uma categoria principal ou uma subcategoria já tem orçamento."
+        forecast:
+          broken: "A previsão deste orçamento foi alterada na Contabilidade."
+      member:
+        name:
+          blank: "O nome apresentado é obrigatório."
+          too_long: "O nome apresentado não pode exceder 80 caracteres."
+        role:
+          invalid: "Função desconhecida."
+        user:
+          invalid: "Este utilizador não existe."
+          taken: "Este utilizador já é membro do agregado familiar."
+      mileage:
+        year:
+          invalid: "Ano inválido."
+        power:
+          invalid: "A potência fiscal deve ser de 1 a 99 CV."
+        coefficient:
+          invalid: "O coeficiente não pode ser negativo."
+        max_km:
+          invalid: "O limite de distância deve ser positivo."
+        duplicate: "Cada escalão figura uma única vez."
+      trip:
+        year:
+          invalid: "Ano inválido."
+        kilometers:
+          invalid: "A distância deve ser de 1 a 200 000 km."
+        label:
+          too_long: "A descrição não pode exceder 255 caracteres."

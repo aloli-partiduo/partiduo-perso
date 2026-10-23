@@ -1,0 +1,323 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+es:
+  perso:
+    module:
+      name: "Finanzas del hogar"
+    permissions:
+      read: "Consultar las finanzas del hogar"
+      write: "Registrar y corregir operaciones, confirmar vencimientos"
+      budget: "Llevar los presupuestos y las valoraciones"
+      admin: "Administrar el hogar: cuentas, categorías, reglas, miembros, baremos"
+    menu:
+      perso: "Mi hogar"
+      perso_operations: "Operaciones"
+      perso_accounts: "Cuentas"
+      perso_schedule: "Vencimientos"
+      perso_budgets: "Presupuestos"
+      perso_wealth: "Patrimonio"
+      perso_tax: "Declaración de la renta"
+      perso_categories: "Categorías del hogar"
+      perso_rules: "Reglas de categorización del hogar"
+      perso_members: "Miembros del hogar"
+      perso_settings: "Ajustes del hogar"
+    natures:
+      current: "Cuenta corriente"
+      savings: "Cuenta de ahorro"
+      life_insurance: "Seguro de vida"
+      pea: "PEA"
+      securities: "Cuenta de valores"
+      mortgage: "Préstamo hipotecario"
+      other_debt: "Otra deuda"
+      property: "Bien"
+    asset_kinds:
+      residence: "Vivienda habitual"
+      real_estate: "Otro inmueble"
+      vehicle: "Vehículo"
+      other: "Otro bien"
+    category_kinds:
+      expense: "Gastos"
+      income: "Ingresos"
+    tax_tags:
+      donation: "Donativo"
+      home_employment: "Empleo doméstico"
+      home_employment_aid: "Ayuda al empleo doméstico"
+      professional_expenses: "Gastos profesionales"
+      rental_income: "Rendimiento inmobiliario"
+      rental_charges: "Gasto inmobiliario"
+    member_roles:
+      adult: "Adulto"
+      minor: "Menor"
+      advisor: "Asesor (solo lectura)"
+    operation_kinds:
+      expense: "Gasto"
+      income: "Ingreso"
+      transfer: "Traspaso entre cuentas"
+    operation_statuses:
+      active: "Vigente"
+      replaced: "Corregida"
+      deleted: "Eliminada"
+    sources:
+      perso: "Registro"
+      bankimport: "Extracto importado"
+      other: "Contabilidad"
+    frequencies:
+      monthly: "Mensual"
+      quarterly: "Trimestral"
+      yearly: "Anual"
+      days: "Cada N días"
+    due_statuses:
+      upcoming: "Próximo"
+      overdue: "Vencido"
+      confirmed: "Confirmado"
+      matched: "Conciliado con un extracto"
+      skipped: "Descartado"
+    deferral_kinds:
+      none: "Sin carencia"
+      partial: "Carencia parcial (solo intereses)"
+      total: "Carencia total (intereses capitalizados)"
+    insurance_modes:
+      none: "Sin seguro"
+      fixed: "Importe fijo por cuota"
+      initial: "Tipo anual sobre el capital inicial"
+      remaining: "Tipo anual sobre el capital pendiente"
+    prepayment_modes:
+      duration: "Reducir el plazo"
+      installment: "Reducir la cuota"
+    loan_reasons:
+      initial: "Cuadro inicial"
+      prepayment: "Amortización anticipada parcial"
+      repaid: "Amortización anticipada total"
+    period_kinds:
+      monthly: "Mensual"
+      annual: "Anual"
+    document_kinds:
+      invoice: "Factura"
+      receipt: "Recibo"
+      tax_receipt: "Certificado de donación"
+      certificate: "Certificado"
+      tax_notice: "Liquidación del impuesto"
+      other: "Otro justificante"
+    tax_sections:
+      donations: "Donativos"
+      home_employment: "Empleo de un trabajador doméstico"
+      professional_expenses: "Gastos reales"
+      rental: "Rendimientos inmobiliarios"
+    tax_boxes:
+      7uf: "donativos a entidades benéficas"
+      7ud: "donativos a organismos de ayuda a personas en dificultad"
+      7db: "importes pagados por el empleo de un trabajador doméstico"
+      7dr: "ayudas percibidas"
+      1ak: "gastos reales del declarante 1"
+      1bk: "gastos reales del declarante 2"
+      4be: "micro-foncier, ingresos brutos"
+      4ba: "rendimientos inmobiliarios (2044)"
+    labels:
+      opening: "Saldo de apertura — %{label}"
+      transfer: "Traspaso a %{label}"
+      installment: "Cuota %{number} — %{label}"
+      mileage: "Gastos de kilometraje — %{label} (%{power} CV, %{km} km)"
+      budget: "Presupuesto %{year}"
+      current_account: "Cuenta corriente"
+      household: "Hogar"
+      aids: "Ayudas percibidas"
+      correction: "Corrección"
+      deletion: "Eliminación"
+      loan: "Préstamo"
+      prepayment: "Amortización anticipada"
+      total: "Total"
+    csv:
+      operations: "Fecha,Cuenta,Tipo,Beneficiario,Categoría,Importe,Miembro,Nota,Asiento,Origen"
+      accounts: "Cuenta,Naturaleza,Entidad,Titulares,Saldo,Valor,Última valoración,Cerrada"
+      valuations: "Cuenta,Fecha,Importe,Valor,Cantidad,Cotización,Nota"
+      tax: "Apartado,Casillas,Descripción,Fecha,Asiento,Importe,Justificantes"
+    pdf:
+      title: "Ayuda para la declaración de la renta %{year}"
+      subtitle: "Rentas del año %{year}"
+      notice: "Ayuda elaborada a partir de las operaciones registradas: compruébela antes de declarar. Sin presentación telemática."
+      item: "Descripción"
+      boxes: "Casillas"
+      amount: "Importe"
+    errors:
+      account:
+        blank: "Elija una cuenta."
+        invalid: "Esta cuenta no existe o no tiene acceso a ella."
+        read_only: "Solo puede consultar esta cuenta."
+        closed: "Esta cuenta está cerrada."
+        label:
+          blank: "La descripción es obligatoria."
+          too_long: "La descripción no debe superar %{max} caracteres."
+        institution:
+          too_long: "La entidad no debe superar 120 caracteres."
+        asset_kind:
+          invalid: "Elija el tipo de bien."
+          not_property: "Solo un bien tiene tipo."
+        rate:
+          invalid: "El tipo debe estar entre 0 y 100 %."
+        ceiling:
+          invalid: "El límite debe ser positivo."
+        holder:
+          invalid: "Este titular no es miembro del hogar."
+        nature:
+          invalid: "Naturaleza de cuenta desconocida."
+          unavailable: "Esta naturaleza de cuenta no existe en este país."
+        ledger:
+          invalid: "Este diario no existe o no tiene acceso a él."
+          not_financial: "Solo un diario financiero puede convertirse en cuenta del hogar."
+          taken: "Este diario ya es una cuenta del hogar."
+        number:
+          invalid: "Esta cuenta del plan no existe."
+          taken: "Esta cuenta del plan ya corresponde a una cuenta del hogar."
+        bank_category:
+          missing: "Falta la categoría de fichas «Banco» en el expediente."
+        misc_ledger:
+          missing: "No tiene acceso a ningún diario de operaciones diversas para el saldo de apertura."
+      category:
+        label:
+          blank: "La descripción es obligatoria."
+          too_long: "La descripción no debe superar %{max} caracteres."
+        kind:
+          invalid: "Elija ingresos o gastos."
+          locked: "El sentido de una categoría no cambia."
+        tax_tag:
+          invalid: "Etiqueta fiscal desconocida."
+        parent:
+          invalid: "Esta categoría principal no existe."
+          depth: "Las categorías solo tienen dos niveles."
+          kind: "La categoría principal debe tener el mismo sentido."
+        has_children: "Esta categoría tiene subcategorías: elimínelas primero."
+        in_use: "Esta categoría está en uso: desactívela en lugar de eliminarla."
+      operation:
+        kind:
+          invalid: "Elija gasto, ingreso o traspaso."
+        amount:
+          positive: "El importe debe ser positivo."
+          cents: "El importe se indica al céntimo."
+        payee:
+          too_long: "El beneficiario no debe superar %{max} caracteres."
+        note:
+          too_long: "La nota no debe superar %{max} caracteres."
+        member:
+          invalid: "Este miembro no existe."
+        transfer:
+          same_account: "Elija otra cuenta de destino."
+        category:
+          blank: "Elija una categoría."
+          invalid: "Esta categoría no existe o ya no se usa."
+          kind: "Esta categoría no corresponde al sentido de la operación."
+          has_children: "Elija una subcategoría."
+        splits:
+          total: "El desglose (%{total}) debe sumar el importe de la operación (%{amount})."
+        date:
+          out_of_range: "Esta fecha está fuera de los años que lleva el hogar."
+        not_posted: "No se ha podido contabilizar la operación."
+      document:
+        target:
+          one: "Un justificante se vincula a una operación, a una cuenta o a un año."
+        kind:
+          invalid: "Tipo de justificante desconocido."
+        label:
+          too_long: "La descripción no debe superar 255 caracteres."
+        entry:
+          invalid: "Esta operación no existe o no tiene acceso a ella."
+        year:
+          invalid: "Año no válido."
+      recurring:
+        payee:
+          blank: "El beneficiario o el pagador es obligatorio."
+        frequency:
+          invalid: "Frecuencia desconocida."
+        interval:
+          invalid: "El intervalo debe ser de 1 a 366 días."
+        last_on:
+          before: "La última fecha debe ser posterior a la primera."
+        due:
+          unknown: "Este vencimiento no existe."
+          done: "Este vencimiento ya se ha tratado."
+          not_reopenable: "Solo se puede reabrir un vencimiento descartado o conciliado."
+      loan:
+        account:
+          not_debt: "Un préstamo se vincula a una cuenta de deuda."
+          taken: "Esta cuenta ya tiene su préstamo."
+        payment:
+          not_cash: "El préstamo se paga desde una cuenta corriente o una cuenta de ahorro."
+        principal:
+          positive: "El capital debe ser positivo."
+        rate:
+          invalid: "El tipo debe estar entre 0 y 100 %."
+        months:
+          invalid: "La duración debe ser de 1 a 600 cuotas."
+        deferral:
+          invalid: "Tipo de carencia desconocido."
+          months: "La duración de la carencia debe ser inferior a la del préstamo (cero sin carencia)."
+        insurance:
+          invalid: "Modalidad de seguro desconocida."
+          value: "El importe o el tipo del seguro no puede ser negativo."
+        category:
+          blank: "Elija la categoría del seguro."
+          invalid: "Elija una categoría de gastos."
+        prepayment:
+          mode: "Elija reducir el plazo o la cuota."
+          positive: "El importe amortizado debe ser positivo."
+          before: "La amortización debe ser posterior a la última versión del cuadro."
+          after_end: "El préstamo ya está amortizado en esa fecha."
+          too_much: "El importe supera el capital pendiente (%{remaining})."
+        installment:
+          unknown: "Esta cuota no figura en el cuadro."
+          done: "Esta cuota ya se ha confirmado."
+      valuation:
+        account:
+          not_valued: "Solo se valoran las inversiones y los bienes."
+        amount:
+          invalid: "El valor debe ser positivo o cero."
+        lines:
+          not_securities: "Solo un PEA o una cuenta de valores se valoran línea a línea."
+          too_many: "Demasiadas líneas."
+        security:
+          blank: "El valor es obligatorio."
+        quantity:
+          positive: "La cantidad debe ser positiva."
+        price:
+          invalid: "La cotización no puede ser negativa."
+        note:
+          too_long: "La nota no debe superar 255 caracteres."
+        date:
+          taken: "Ya hay un valor registrado en esa fecha."
+      budget:
+        year:
+          taken: "El presupuesto %{year} ya existe."
+          missing: "El año %{year} no lo lleva el expediente."
+        amount:
+          invalid: "El importe no puede ser negativo."
+        period_kind:
+          invalid: "Elija mensual o anual."
+        category:
+          taken: "Esta categoría ya está presupuestada."
+          overlap: "Una categoría principal o una subcategoría ya está presupuestada."
+        forecast:
+          broken: "La previsión de este presupuesto se ha modificado en Contabilidad."
+      member:
+        name:
+          blank: "El nombre visible es obligatorio."
+          too_long: "El nombre visible no debe superar 80 caracteres."
+        role:
+          invalid: "Rol desconocido."
+        user:
+          invalid: "Este usuario no existe."
+          taken: "Este usuario ya es miembro del hogar."
+      mileage:
+        year:
+          invalid: "Año no válido."
+        power:
+          invalid: "La potencia fiscal debe ser de 1 a 99 CV."
+        coefficient:
+          invalid: "El coeficiente no puede ser negativo."
+        max_km:
+          invalid: "El límite de distancia debe ser positivo."
+        duplicate: "Cada tramo figura una sola vez."
+      trip:
+        year:
+          invalid: "Año no válido."
+        kilometers:
+          invalid: "La distancia debe ser de 1 a 200 000 km."
+        label:
+          too_long: "La descripción no debe superar 255 caracteres."

@@ -1,0 +1,323 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+de:
+  perso:
+    module:
+      name: "Haushaltsfinanzen"
+    permissions:
+      read: "Haushaltsfinanzen einsehen"
+      write: "Vorgänge erfassen und korrigieren, Fälligkeiten bestätigen"
+      budget: "Budgets und Bewertungen führen"
+      admin: "Haushalt verwalten: Konten, Kategorien, Regeln, Mitglieder, Tabellen"
+    menu:
+      perso: "Mein Haushalt"
+      perso_operations: "Vorgänge"
+      perso_accounts: "Konten"
+      perso_schedule: "Fälligkeiten"
+      perso_budgets: "Budgets"
+      perso_wealth: "Vermögen"
+      perso_tax: "Einkommensteuererklärung"
+      perso_categories: "Haushaltskategorien"
+      perso_rules: "Kategorisierungsregeln"
+      perso_members: "Haushaltsmitglieder"
+      perso_settings: "Haushaltseinstellungen"
+    natures:
+      current: "Girokonto"
+      savings: "Sparkonto"
+      life_insurance: "Lebensversicherung"
+      pea: "PEA"
+      securities: "Wertpapierdepot"
+      mortgage: "Immobilienkredit"
+      other_debt: "Sonstige Schuld"
+      property: "Vermögensgegenstand"
+    asset_kinds:
+      residence: "Hauptwohnsitz"
+      real_estate: "Sonstige Immobilie"
+      vehicle: "Fahrzeug"
+      other: "Sonstiger Gegenstand"
+    category_kinds:
+      expense: "Ausgaben"
+      income: "Einnahmen"
+    tax_tags:
+      donation: "Spende"
+      home_employment: "Haushaltshilfe"
+      home_employment_aid: "Zuschuss zur Haushaltshilfe"
+      professional_expenses: "Werbungskosten"
+      rental_income: "Mieteinnahme"
+      rental_charges: "Vermietungsaufwand"
+    member_roles:
+      adult: "Erwachsener"
+      minor: "Minderjähriger"
+      advisor: "Berater (nur Lesen)"
+    operation_kinds:
+      expense: "Ausgabe"
+      income: "Einnahme"
+      transfer: "Umbuchung zwischen Konten"
+    operation_statuses:
+      active: "Gültig"
+      replaced: "Korrigiert"
+      deleted: "Gelöscht"
+    sources:
+      perso: "Erfassung"
+      bankimport: "Importierter Kontoauszug"
+      other: "Buchhaltung"
+    frequencies:
+      monthly: "Monatlich"
+      quarterly: "Vierteljährlich"
+      yearly: "Jährlich"
+      days: "Alle N Tage"
+    due_statuses:
+      upcoming: "Anstehend"
+      overdue: "Überfällig"
+      confirmed: "Bestätigt"
+      matched: "Mit Kontoauszug abgeglichen"
+      skipped: "Übersprungen"
+    deferral_kinds:
+      none: "Ohne Tilgungsaussetzung"
+      partial: "Teilweise Aussetzung (nur Zinsen)"
+      total: "Vollständige Aussetzung (Zinsen kapitalisiert)"
+    insurance_modes:
+      none: "Ohne Versicherung"
+      fixed: "Fester Betrag je Rate"
+      initial: "Jahressatz auf das Anfangskapital"
+      remaining: "Jahressatz auf die Restschuld"
+    prepayment_modes:
+      duration: "Laufzeit verkürzen"
+      installment: "Rate senken"
+    loan_reasons:
+      initial: "Ursprünglicher Tilgungsplan"
+      prepayment: "Teilweise Sondertilgung"
+      repaid: "Vollständige vorzeitige Rückzahlung"
+    period_kinds:
+      monthly: "Monatlich"
+      annual: "Jährlich"
+    document_kinds:
+      invoice: "Rechnung"
+      receipt: "Quittung"
+      tax_receipt: "Spendenbescheinigung"
+      certificate: "Bescheinigung"
+      tax_notice: "Steuerbescheid"
+      other: "Sonstiger Nachweis"
+    tax_sections:
+      donations: "Spenden"
+      home_employment: "Beschäftigung einer Haushaltshilfe"
+      professional_expenses: "Tatsächliche Werbungskosten"
+      rental: "Einkünfte aus Vermietung"
+    tax_boxes:
+      7uf: "Spenden an gemeinnützige Organisationen"
+      7ud: "Spenden an Hilfsorganisationen für Bedürftige"
+      7db: "Zahlungen für die Beschäftigung einer Haushaltshilfe"
+      7dr: "erhaltene Zuschüsse"
+      1ak: "tatsächliche Werbungskosten Erklärender 1"
+      1bk: "tatsächliche Werbungskosten Erklärender 2"
+      4be: "Micro-foncier, Bruttoeinnahmen"
+      4ba: "Einkünfte aus Vermietung (2044)"
+    labels:
+      opening: "Anfangssaldo — %{label}"
+      transfer: "Umbuchung auf %{label}"
+      installment: "Rate %{number} — %{label}"
+      mileage: "Kilometerpauschale — %{label} (%{power} CV, %{km} km)"
+      budget: "Budget %{year}"
+      current_account: "Girokonto"
+      household: "Haushalt"
+      aids: "Erhaltene Zuschüsse"
+      correction: "Korrektur"
+      deletion: "Löschung"
+      loan: "Darlehen"
+      prepayment: "Sondertilgung"
+      total: "Summe"
+    csv:
+      operations: "Datum,Konto,Art,Empfänger,Kategorie,Betrag,Mitglied,Notiz,Buchung,Herkunft"
+      accounts: "Konto,Art,Institut,Inhaber,Saldo,Wert,Letzte Bewertung,Geschlossen"
+      valuations: "Konto,Datum,Betrag,Wertpapier,Menge,Kurs,Notiz"
+      tax: "Rubrik,Felder,Bezeichnung,Datum,Buchung,Betrag,Nachweise"
+    pdf:
+      title: "Hilfe zur Einkommensteuererklärung %{year}"
+      subtitle: "Einkünfte des Jahres %{year}"
+      notice: "Hilfe auf Grundlage der erfassten Vorgänge: vor der Erklärung prüfen. Keine elektronische Übermittlung."
+      item: "Bezeichnung"
+      boxes: "Felder"
+      amount: "Betrag"
+    errors:
+      account:
+        blank: "Wählen Sie ein Konto."
+        invalid: "Dieses Konto existiert nicht oder ist für Sie nicht freigegeben."
+        read_only: "Sie können dieses Konto nur einsehen."
+        closed: "Dieses Konto ist geschlossen."
+        label:
+          blank: "Die Bezeichnung ist erforderlich."
+          too_long: "Die Bezeichnung darf höchstens %{max} Zeichen lang sein."
+        institution:
+          too_long: "Das Institut darf höchstens 120 Zeichen lang sein."
+        asset_kind:
+          invalid: "Wählen Sie die Art des Gegenstands."
+          not_property: "Nur ein Vermögensgegenstand hat eine Art."
+        rate:
+          invalid: "Der Satz muss zwischen 0 und 100 % liegen."
+        ceiling:
+          invalid: "Die Obergrenze muss positiv sein."
+        holder:
+          invalid: "Dieser Inhaber ist kein Mitglied des Haushalts."
+        nature:
+          invalid: "Unbekannte Kontoart."
+          unavailable: "Diese Kontoart gibt es in diesem Land nicht."
+        ledger:
+          invalid: "Dieses Journal existiert nicht oder ist für Sie nicht freigegeben."
+          not_financial: "Nur ein Finanzjournal kann ein Haushaltskonto werden."
+          taken: "Dieses Journal ist bereits ein Haushaltskonto."
+        number:
+          invalid: "Dieses Konto des Kontenrahmens existiert nicht."
+          taken: "Dieses Konto des Kontenrahmens gehört bereits zu einem Haushaltskonto."
+        bank_category:
+          missing: "Die Stammsatzkategorie „Bank“ fehlt im Mandanten."
+        misc_ledger:
+          missing: "Für den Anfangssaldo ist Ihnen kein Journal für sonstige Buchungen freigegeben."
+      category:
+        label:
+          blank: "Die Bezeichnung ist erforderlich."
+          too_long: "Die Bezeichnung darf höchstens %{max} Zeichen lang sein."
+        kind:
+          invalid: "Wählen Sie Einnahmen oder Ausgaben."
+          locked: "Die Richtung einer Kategorie lässt sich nicht ändern."
+        tax_tag:
+          invalid: "Unbekanntes Steuerkennzeichen."
+        parent:
+          invalid: "Diese übergeordnete Kategorie existiert nicht."
+          depth: "Kategorien haben nur zwei Ebenen."
+          kind: "Die übergeordnete Kategorie muss dieselbe Richtung haben."
+        has_children: "Diese Kategorie hat Unterkategorien: Löschen Sie diese zuerst."
+        in_use: "Diese Kategorie wird verwendet: Deaktivieren Sie sie, statt sie zu löschen."
+      operation:
+        kind:
+          invalid: "Wählen Sie Ausgabe, Einnahme oder Umbuchung."
+        amount:
+          positive: "Der Betrag muss positiv sein."
+          cents: "Der Betrag wird auf den Cent genau angegeben."
+        payee:
+          too_long: "Der Empfänger darf höchstens %{max} Zeichen lang sein."
+        note:
+          too_long: "Die Notiz darf höchstens %{max} Zeichen lang sein."
+        member:
+          invalid: "Dieses Mitglied existiert nicht."
+        transfer:
+          same_account: "Wählen Sie ein anderes Zielkonto."
+        category:
+          blank: "Wählen Sie eine Kategorie."
+          invalid: "Diese Kategorie existiert nicht oder wird nicht mehr verwendet."
+          kind: "Diese Kategorie passt nicht zur Richtung des Vorgangs."
+          has_children: "Wählen Sie eine Unterkategorie."
+        splits:
+          total: "Die Aufteilung (%{total}) muss den Betrag des Vorgangs (%{amount}) ergeben."
+        date:
+          out_of_range: "Dieses Datum liegt außerhalb der vom Haushalt geführten Jahre."
+        not_posted: "Der Vorgang konnte nicht gebucht werden."
+      document:
+        target:
+          one: "Ein Nachweis gehört zu einem Vorgang, einem Konto oder einem Jahr."
+        kind:
+          invalid: "Unbekannte Nachweisart."
+        label:
+          too_long: "Die Bezeichnung darf höchstens 255 Zeichen lang sein."
+        entry:
+          invalid: "Dieser Vorgang existiert nicht oder ist für Sie nicht freigegeben."
+        year:
+          invalid: "Ungültiges Jahr."
+      recurring:
+        payee:
+          blank: "Empfänger oder Zahler ist erforderlich."
+        frequency:
+          invalid: "Unbekannte Häufigkeit."
+        interval:
+          invalid: "Das Intervall muss 1 bis 366 Tage betragen."
+        last_on:
+          before: "Das letzte Datum muss nach dem ersten liegen."
+        due:
+          unknown: "Diese Fälligkeit existiert nicht."
+          done: "Diese Fälligkeit wurde bereits bearbeitet."
+          not_reopenable: "Nur eine übersprungene oder abgeglichene Fälligkeit lässt sich wieder öffnen."
+      loan:
+        account:
+          not_debt: "Ein Darlehen gehört zu einem Schuldenkonto."
+          taken: "Dieses Konto hat bereits sein Darlehen."
+        payment:
+          not_cash: "Das Darlehen wird von einem Girokonto oder einem Sparkonto bezahlt."
+        principal:
+          positive: "Das Kapital muss positiv sein."
+        rate:
+          invalid: "Der Satz muss zwischen 0 und 100 % liegen."
+        months:
+          invalid: "Die Laufzeit muss 1 bis 600 Raten betragen."
+        deferral:
+          invalid: "Unbekannte Art der Tilgungsaussetzung."
+          months: "Die Dauer der Tilgungsaussetzung muss kürzer als die Laufzeit sein (null ohne Aussetzung)."
+        insurance:
+          invalid: "Unbekannte Versicherungsart."
+          value: "Versicherungsbetrag oder -satz darf nicht negativ sein."
+        category:
+          blank: "Wählen Sie die Kategorie der Versicherung."
+          invalid: "Wählen Sie eine Ausgabenkategorie."
+        prepayment:
+          mode: "Wählen Sie, ob die Laufzeit oder die Rate sinken soll."
+          positive: "Der zurückgezahlte Betrag muss positiv sein."
+          before: "Die Rückzahlung muss nach der letzten Fassung des Tilgungsplans liegen."
+          after_end: "Das Darlehen ist zu diesem Datum bereits zurückgezahlt."
+          too_much: "Der Betrag übersteigt die Restschuld (%{remaining})."
+        installment:
+          unknown: "Diese Rate steht nicht im Tilgungsplan."
+          done: "Diese Rate wurde bereits bestätigt."
+      valuation:
+        account:
+          not_valued: "Nur Geldanlagen und Vermögensgegenstände werden bewertet."
+        amount:
+          invalid: "Der Wert muss positiv oder null sein."
+        lines:
+          not_securities: "Nur ein PEA oder ein Wertpapierdepot wird positionsweise bewertet."
+          too_many: "Zu viele Positionen."
+        security:
+          blank: "Das Wertpapier ist erforderlich."
+        quantity:
+          positive: "Die Menge muss positiv sein."
+        price:
+          invalid: "Der Kurs darf nicht negativ sein."
+        note:
+          too_long: "Die Notiz darf höchstens 255 Zeichen lang sein."
+        date:
+          taken: "Zu diesem Datum ist bereits ein Wert erfasst."
+      budget:
+        year:
+          taken: "Das Budget %{year} existiert bereits."
+          missing: "Das Jahr %{year} wird im Mandanten nicht geführt."
+        amount:
+          invalid: "Der Betrag darf nicht negativ sein."
+        period_kind:
+          invalid: "Wählen Sie monatlich oder jährlich."
+        category:
+          taken: "Diese Kategorie ist bereits budgetiert."
+          overlap: "Eine übergeordnete Kategorie oder eine Unterkategorie ist bereits budgetiert."
+        forecast:
+          broken: "Die Prognose dieses Budgets wurde in der Buchhaltung geändert."
+      member:
+        name:
+          blank: "Der Anzeigename ist erforderlich."
+          too_long: "Der Anzeigename darf höchstens 80 Zeichen lang sein."
+        role:
+          invalid: "Unbekannte Rolle."
+        user:
+          invalid: "Dieser Benutzer existiert nicht."
+          taken: "Dieser Benutzer ist bereits Mitglied des Haushalts."
+      mileage:
+        year:
+          invalid: "Ungültiges Jahr."
+        power:
+          invalid: "Die Steuer-PS (CV) müssen zwischen 1 und 99 liegen."
+        coefficient:
+          invalid: "Der Koeffizient darf nicht negativ sein."
+        max_km:
+          invalid: "Die Entfernungsgrenze muss positiv sein."
+        duplicate: "Jede Stufe darf nur einmal vorkommen."
+      trip:
+        year:
+          invalid: "Ungültiges Jahr."
+        kilometers:
+          invalid: "Die Entfernung muss 1 bis 200 000 km betragen."
+        label:
+          too_long: "Die Bezeichnung darf höchstens 255 Zeichen lang sein."

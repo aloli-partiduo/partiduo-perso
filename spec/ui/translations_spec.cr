@@ -4,21 +4,21 @@ require "../spec_helper"
 
 # Traductions des écrans de l'extension (ADR-005 D7) : chaque route de
 # `/ext/PERSO/` servie en `GET` (liste tirée du routeur de Marten),
-# obtenue en fr, en et nl par l'administrateur d'un foyer garni : deux
-# membres, comptes de chaque sorte (courant, livret, PEA valorisé par
-# lignes, résidence valorisée, prêt immobilier et son emprunt,
-# dette sans emprunt),
-# opérations (dépense avec justificatif, recette, virement, ventilation),
-# opération récurrente aux échéances confirmée, sautée et en retard,
-# budget, déplacements, règle et catégorie ajoutée. Contrôle de
-# l'interface (`PartiduoUi::Translations`) : ni marqueur de traduction
-# absente, ni clé brute, ni interpolation non résolue, et toute route
-# atteinte par les liens des pages.
+# obtenue dans chaque langue de l'interface par l'administrateur d'un
+# foyer garni : deux membres, comptes de chaque sorte (courant, livret,
+# PEA valorisé par lignes, résidence valorisée, prêt immobilier et son
+# emprunt, dette sans emprunt), opérations (dépense avec justificatif,
+# recette, virement, ventilation), opération récurrente aux échéances
+# confirmée, sautée et en retard, budget, déplacements, règle et
+# catégorie ajoutée. Contrôle de l'interface
+# (`PartiduoUi::Translations`) : ni marqueur de traduction absente, ni
+# clé brute, ni interpolation non résolue, et toute route atteinte par
+# les liens des pages.
 
 private alias S = Perso::SpecSupport
 private alias Api = Perso::Api
 
-describe "Traductions des écrans PERSO (fr, en, nl)" do
+describe "Traductions des écrans PERSO (langues de l'interface)" do
   it "rend chaque écran dans chaque langue, sans clé absente, brute ni interpolation non résolue" do
     S.provision
     [2025, 2026, 2027].each { |year| PartiduoUi::Reference.fiscal_year(year) }
