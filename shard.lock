@@ -62,15 +62,15 @@ shards:
 
   partiduo:
     git: https://github.com/aloli-partiduo/partiduo-app.git
-    version: 0.1.37+git.commit.10d5914e2988cb8eb07f71f608fb72e6ec2952d1
+    version: 0.1.46+git.commit.9863bf96d6f7eca2d2f28664a85565db856300a6
 
   partiduo-bankimport:
     git: https://github.com/aloli-partiduo/partiduo-bankimport.git
-    version: 0.1.4+git.commit.14152ba435eeb59397d6627fc708d21db25b9c20
+    version: 0.1.9+git.commit.d52d83495d1bc81bce5dae7badbd23f9dffcc11e
 
   partiduo-ui-bulma:
     git: https://github.com/aloli-partiduo/partiduo-ui-bulma.git
-    version: 0.1.18+git.commit.a640c2c1f3849f8bd959b2f3c9e21e6e514876cc
+    version: 0.1.23+git.commit.9f8b77ec5fd735c7f6d072258d70efa6ad77533a
 
   password-policy:
     git: https://github.com/aloli-crystal/password-policy.git
