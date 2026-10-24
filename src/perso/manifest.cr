@@ -14,6 +14,10 @@
 #   URSSAF, relation client, modèles de factures). Le contrôle joue dans
 #   les deux sens. `AMORTIS` se déclare lui-même incompatible avec `PERSO` ;
 #   `SEPA` reste admis (virements groupés d'un foyer, D-SEPA-002).
+# * Type de dossier (D-PER-024, D-AMD-042 du cœur) : l'extension ne
+#   s'active que dans un dossier `household` ; le type `company` l'exclut
+#   (`incompatible_with_kind "company"`), contrôlé à l'activation, au
+#   provisionnement et au démarrage.
 # * Permissions (D12) : `perso.read` (consulter), `perso.write` (saisir et
 #   corriger des opérations, confirmer des échéances), `perso.budget`
 #   (budgets et valorisations), `perso.admin` (comptes, catégories, règles,
@@ -35,6 +39,7 @@ Partiduo::Modules.register do
   depends_on "ACCOUNTING", "BANKIMPORT"
   incompatible_with "INVOICING", "MICRO", "LIBERAL", "STOCK", "FOLLOWUP", "ANALYTIC",
     "EINV", "SUPERPDP", "ESALINK", "CHORUSPRO", "TELEDEC", "URSSAF", "CRM", "MODELES"
+  incompatible_with_kind "company"
 
   permission "perso.read"
   permission "perso.write"

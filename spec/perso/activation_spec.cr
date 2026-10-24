@@ -14,6 +14,7 @@ describe "Extension PERSO : manifeste, activation, dossier foyer (ADR-011 D1, D2
     manifest.incompatible_with.should contain("LIBERAL")
     manifest.incompatible_with.should contain("TELEDEC")
     manifest.incompatible_with.should_not contain("SEPA")
+    manifest.incompatible_with_kind.should eq(["company"])
     manifest.permissions.should eq(["perso.read", "perso.write", "perso.budget", "perso.admin"])
     manifest.version.should eq(Perso::VERSION)
     Perso::VERSION.should match(/\A\d+\.\d+\.\d+\z/)
@@ -42,12 +43,27 @@ describe "Extension PERSO : manifeste, activation, dossier foyer (ADR-011 D1, D2
     current.balance.should eq(BigDecimal.new(0))
   end
 
-  it "est indisponible dans un dossier d'entreprise" do
+  it "est exclue d'un dossier d'entreprise : provisionnement, activation et démarrage refusés (D-PER-024)" do
     with_active_modules("accounting,bankimport,perso") do
-      PartiduoUi::Reference.provision("fr")
+      expect_raises(Exception, /core.errors.provision.kind.excluded/) { PartiduoUi::Reference.provision("fr") }
     end
-    expect_raises(Partiduo::Api::ModuleDisabled) { Api.categories(S.system) }
-    Api.tile(S.system).should be_nil
+    with_active_modules("accounting,bankimport") do
+      PartiduoUi::Reference.provision("fr")
+      refused = Partiduo::Api::Modules.activate(S.system, "PERSO")
+      refused.error_keys.should eq(["modules.errors.activation.excluded_kind"])
+      refused.errors.first.params.should eq({"module" => "PERSO", "kind" => "company"})
+      expect_raises(Partiduo::Api::ModuleDisabled) { Api.categories(S.system) }
+      Api.tile(S.system).should be_nil
+    end
+    # Dossier d'entreprise où l'extension était déjà active : le démarrage
+    # la nomme et dit comment la désactiver.
+    with_active_modules("accounting,bankimport,perso") do
+      Partiduo::Modules.kind_errors(Partiduo::Modules::State.active_codes, "company")
+        .should eq(["PERSO est exclu des dossiers de type company, actif"])
+      expect_raises(Partiduo::Modules::ConfigurationError, /PARTIDUO_MODULES_REPAIR=1 partiduo-manage instance disable perso/) do
+        Partiduo::Modules.check!
+      end
+    end
   end
 
   it "reprend les catégories du plan après coup sans doublon" do

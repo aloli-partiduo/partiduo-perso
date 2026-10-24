@@ -415,6 +415,27 @@ lignes déjà importées ont celui que la migration 0002 de l'import a repris
 (tiers d'un CSV ou d'un QIF, libellé d'un OFX), ce qui ne change pas leur
 présentation.
 
+=== D-PER-024 — Seulement dans un dossier foyer (24 octobre 2026)
+
+*Contexte.* L'extension n'agit que dans un dossier `household`
+(`Records.household?`) ; dans un dossier d'entreprise, rien ne
+l'empêchait pourtant d'être activée, sans effet utile.
+
+*Choix.* `incompatible_with_kind "company"` au manifeste (exclusion
+adoptée par l'utilisateur le 24 octobre 2026, D-AMD-042 du cœur) : le
+type `company` est un type nommé (`InitialData.register_kind` du cœur),
+aucun mécanisme nouveau n'est nécessaire. Le cœur refuse l'activation
+dans un dossier d'entreprise (`modules.errors.activation.excluded_kind`),
+le provisionnement d'une entreprise avec l'extension active
+(`core.errors.provision.kind.excluded`) et le démarrage d'un dossier
+d'entreprise où elle serait active, avec la commande qui la désactive
+(D-AMD-040 du cœur). Les incompatibilités avec les pièces d'entreprise
+(D-PER-002) restent déclarées : elles disent la raison à qui lit le
+manifeste, et la console les affiche.
+
+*Vérification.* `spec/perso/activation_spec.cr` ; les autres specs provisionnent
+déjà un dossier `household`.
+
 == Amendements proposés
 
 À soumettre à l'utilisateur ; l'extension les contourne sans modifier
