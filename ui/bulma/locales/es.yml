@@ -109,7 +109,7 @@ es:
       new_ledger: "Crear una cuenta nueva"
       ledger_help: "El diario financiero de una cuenta ya llevada en contabilidad, por ejemplo la cuenta corriente del expediente."
       opening_balance: "Saldo de apertura"
-      opening_balance_help: "Haber en la fecha de apertura, o capital adeudado para una deuda; contabilizado contra el patrimonio de apertura."
+      opening_balance_help: "Saldo disponible en la fecha de apertura, o capital adeudado para una deuda; contabilizado contra el patrimonio de apertura."
       form_intro: "Una cuenta del hogar es un diario de la contabilidad: se crea con su ficha y su cuenta, sin que usted tenga que elegir un número."
       closed: "Cerrada"
       closed_label: "%{label} (cerrada)"

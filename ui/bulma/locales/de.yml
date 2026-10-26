@@ -15,7 +15,7 @@ de:
       year: "Dieses Jahr"
       previous_year: "Letztes Jahr"
       last_12_months: "Letzte zwölf Monate"
-      all: "Alle Daten"
+      all: "Gesamter Zeitraum"
     tile:
       cash: "Liquidität des Haushalts"
       accounts:
@@ -317,7 +317,7 @@ de:
       confirm_delete: "Diese Regel löschen?"
       csv_name: "regeln"
       none: "Keine Regeln."
-      label_contains: "Text enthält"
+      label_contains: "Buchungstext enthält"
       amount: "Betrag ist"
       direction: "Richtung"
       active: "Aktiv"

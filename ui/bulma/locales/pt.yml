@@ -219,7 +219,7 @@ pt:
       business_days: "Adiar para o dia útil seguinte"
       estimated: "Montante estimado"
       active: "Ativa"
-      inactive: "Parada"
+      inactive: "Interrompida"
       next_due: "Próximo vencimento"
     budgets:
       intro: "Um orçamento por ano civil e por categoria, comparado com o realizado; baseia-se nas previsões da contabilidade."

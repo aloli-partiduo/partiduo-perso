@@ -318,6 +318,6 @@ de:
         year:
           invalid: "Ungültiges Jahr."
         kilometers:
-          invalid: "Die Entfernung muss 1 bis 200 000 km betragen."
+          invalid: "Die Entfernung muss 1 bis 200.000 km betragen."
         label:
           too_long: "Die Bezeichnung darf höchstens 255 Zeichen lang sein."

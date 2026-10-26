@@ -248,7 +248,7 @@ it:
           invalid: "La durata deve essere da 1 a 600 rate."
         deferral:
           invalid: "Tipo di preammortamento sconosciuto."
-          months: "La durata del preammortamento deve essere inferiore a quella del prestito (nulla senza preammortamento)."
+          months: "La durata del preammortamento deve essere inferiore a quella del prestito (pari a zero senza preammortamento)."
         insurance:
           invalid: "Modalità di assicurazione sconosciuta."
           value: "L'importo o il tasso dell'assicurazione non può essere negativo."
@@ -270,7 +270,7 @@ it:
         amount:
           invalid: "Il valore deve essere positivo o nullo."
         lines:
-          not_securities: "Solo un PEA o un conto titoli si valutano riga per riga."
+          not_securities: "Solo un PEA o un conto titoli si valuta riga per riga."
           too_many: "Troppe righe."
         security:
           blank: "Il titolo è obbligatorio."
@@ -318,6 +318,6 @@ it:
         year:
           invalid: "Anno non valido."
         kilometers:
-          invalid: "La distanza deve essere da 1 a 200 000 km."
+          invalid: "La distanza deve essere da 1 a 200.000 km."
         label:
           too_long: "La descrizione non deve superare 255 caratteri."

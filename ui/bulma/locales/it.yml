@@ -6,7 +6,7 @@ it:
       other: "%{count} scadenze in ritardo da confermare"
     menu:
       dashboard: "Cruscotto"
-      statements: "Estratti conto da trattare"
+      statements: "Estratti conto da elaborare"
     forms:
       none: "—"
     periods:
